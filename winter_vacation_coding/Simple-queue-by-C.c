@@ -5,7 +5,7 @@
 	Functions:
 	(1) Push() or Enqueue
 	(2) Pop() or dequeue
-	(5) IsEmpty()
+	(3) IsEmpty()
 
 */
 #include <stdio.h>

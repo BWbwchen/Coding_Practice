@@ -28,7 +28,7 @@ int compare_sec(const void *a, const void *b)
     ib = *(Menu **)b;
 //  notice ! can not return the difference of float value directly     
     if(fabs(ia->review - ib->review) < 0.01){
-//    	    equal
+//    	equal
     	if(ia->price < ib->price){
     		return -1;
     	}else if(ia->price > ib->price){

@@ -1,3 +1,7 @@
+//I am very sorry about today's lab
+//It seems that sample output had been changed (?
+
+
 #define DEBUG
 #include <stdio.h>
 #include <stdlib.h>

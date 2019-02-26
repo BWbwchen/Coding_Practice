@@ -1,5 +1,7 @@
 //I am very sorry about today's lab
-//It seems that sample output had been changed (?
+//It seems that I probably miss print the brand name
+
+
 
 
 #define DEBUG

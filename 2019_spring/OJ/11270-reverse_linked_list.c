@@ -26,10 +26,8 @@ Node* createList() {
             new->data = data;
             new->next = NULL;
             temp->next = new;
-            temp = new;
-            
+            temp = new; 
         }
-        
     }
     return head;
 }
@@ -38,12 +36,14 @@ Node* reverse(Node* heada) {
         Node *pre = NULL;
         Node *mid = heada;
         Node *nex = mid->next;
+        
         while(nex != NULL){
             mid->next = pre;
             pre = mid;
             mid = nex;
             nex = nex->next;
         }
+        
         mid->next = pre;
         return mid;
     }else{

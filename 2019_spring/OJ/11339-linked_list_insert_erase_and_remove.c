@@ -42,6 +42,7 @@ void do_I(Node **head,size_t pos,unsigned short val) {
         }
     }
     len++;
+
 }
 void do_E(Node **head,size_t begin_pos,size_t end_pos) {
     if(begin_pos >= end_pos) return;

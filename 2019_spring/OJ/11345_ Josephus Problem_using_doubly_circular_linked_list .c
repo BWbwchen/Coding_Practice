@@ -91,7 +91,9 @@ int solveJosephus(int step) {
     }
     return begin->id;
 }
-
+void freeList(){
+    return ;
+}
 
 int main (){
     #ifdef DEBUG

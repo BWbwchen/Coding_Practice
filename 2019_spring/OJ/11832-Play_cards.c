@@ -1,3 +1,5 @@
+//WARNING!!!! this code haven't finished !!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!1
 #define DEBUG
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +11,7 @@ typedef struct Node{
     struct Node *next;
 }Node;
 
+int len = 0;
 Node *head = NULL;
 
 void create (int total) {
@@ -42,11 +45,14 @@ void ADD(int x, int y) {
         head = new;
     }else{
         Node *temp = head;
-        while(y-- > 1) temp = temp->next;
+        
+        while(x-- > 1) temp = temp->next;
+        
         new->data = y;
         new->next = temp->next;
         temp->next = new;
     }
+
 }
 
 void CUT(int begin, int end) {

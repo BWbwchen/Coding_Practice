@@ -1,3 +1,5 @@
+// WARNING !!! this code haven't finished !!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #define DEBUG
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +13,7 @@ typedef struct node
 	unsigned short val;
 } Node;
 
-int len = 0;
+unsigned int len = 0;
 Node *begin = NULL;
 Node *ptr = NULL; // prev
 Node *tail = NULL;
@@ -20,7 +22,7 @@ void do_I(Node **head,size_t pos,unsigned short val) {
     
     if(len == 0){
         *head = (Node *)malloc(sizeof(Node ));
-        begin = head;
+        begin = *head;
         begin->val = val;
         begin->next = NULL;
         begin->prev = NULL;
@@ -36,7 +38,7 @@ void do_I(Node **head,size_t pos,unsigned short val) {
         
         if(pos >= len) {
             //tail
-            new->next = head;
+            new->next = *head;
         }else{
             new = ptr;
         }

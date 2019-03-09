@@ -15,7 +15,6 @@ typedef struct node
 
 unsigned int len = 0;
 Node *begin = NULL;
-Node *ptr = NULL; // prev
 Node *tail = NULL;
 
 void do_I(Node **head,size_t pos,unsigned short val) {
@@ -26,49 +25,63 @@ void do_I(Node **head,size_t pos,unsigned short val) {
         begin->val = val;
         begin->next = NULL;
         begin->prev = NULL;
-        ptr = begin;
         
     }else{
         Node *new = (Node *)malloc(sizeof(Node ));
             
-        new->val = val;
-        new->prev = ptr;
-        ptr->next = new;
-        new->next = NULL;
+        Node *temp = *head;
+        if(pos >= len) pos = len-1;
+        for(int i = 0; i < pos; ++i) temp = temp->next;
         
-        if(pos >= len) {
-            //tail
-            new->next = *head;
-        }else{
-            new = ptr;
-        }
+        new->val = val;
+        new->next = temp->next;
+        new->prev = temp;
+        temp->next = new;
+        
     }
     len++;
 
 }
 void do_E(Node **head,size_t begin_pos,size_t end_pos) {
+    if(len == 0) return;
+    if(end_pos >= len ) end_pos = len-1;
     if(begin_pos >= end_pos) return;
-    
+        
     //if over the limit
-    if(end_pos >= len) {
+    
+    Node *start = *head;
+    Node *end = *head;
+    for(int i = 0; i < begin_pos; ++i) start = start->next;
+    for(int i = 0; i < end_pos; ++i) end = end->next;
 
-    }else{
-        Node *start = *head;
-        Node *end = *head;
+    if(start->prev == NULL){ 
+        *head = end;
+    }else{ 
+        start->prev->next = end; 
+        end->prev = start->prev;
     }
+    len -= (end_pos - begin_pos);
 }
 void do_P(Node  *head,size_t pos){
     Node *temp = head;
-    for(int i = 1; i <= pos && temp->next != NULL; ++i) temp = temp->next;
-    printf("%d ", temp->val);
+    if(len == 0) return;
+    if(pos >= len) pos = len-1;
+    for(int i = 0; i < pos; ++i) temp = temp->next;
+    if(temp != NULL) printf("%d ", temp->val);
 }
 void do_R(Node **head,unsigned short val) {
     Node *temp = *head;
     while( temp != NULL ) {
         if( temp->val == val ) {
             Node *d = temp;
-            temp->prev->next = temp->next;
-            temp->next->prev = temp->prev;
+            // the left side of the temp
+            // if is head
+            if(temp->prev == NULL) *head = temp->next;
+            else temp->prev->next = temp->next;
+            
+            if(temp->next == NULL) ;
+            else temp->next->prev = temp->prev;
+            
             temp = temp->next;
             free(d);
         }else{
@@ -105,21 +118,34 @@ int main (){
             case 'I':
                 scanf("%zu %hu",&pos,&val);
                 do_I(&head,pos,val);
+                //printf("I OK!\n");
+                //do_S(head);
+                //printf("\n");
                 break;
             case 'E':
                 scanf("%zu %zu",&begin_pos,&end_pos);
                 do_E(&head,begin_pos,end_pos);
+                //printf("E OK!\n");
+                //do_S(head);
+                //printf("\n");
                 break;
             case 'P':
                 scanf("%zu",&pos);
                 do_P(head,pos);                
+                //printf("P OK!\n");
+                //printf("\n");
                 break;
             case 'R':
                 scanf("%hu",&val);
                 do_R(&head,val);
+                //printf("R OK!\n");
+                //do_S(head);
+                //printf("\n");
                 break;
             case 'S':
                 do_S(head);
+                //printf("S OK!\n");
+                //printf("\n");
                 break;
         }
     }	

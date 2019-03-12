@@ -15,7 +15,6 @@ typedef struct node
 
 unsigned int len = 0;
 Node *begin = NULL;
-Node *tail = NULL;
 
 void do_I(Node **head,size_t pos,unsigned short val) {
     
@@ -30,14 +29,38 @@ void do_I(Node **head,size_t pos,unsigned short val) {
         Node *new = (Node *)malloc(sizeof(Node ));
             
         Node *temp = *head;
-        if(pos >= len) pos = len-1;
+        if(pos >= len) {
+            while(temp->next != NULL ) temp = temp->next;
+            new->val = val;
+            new->next = NULL;
+            new->prev = temp;
+            temp->next = new;
+            ++len;
+            return;
+        }
         for(int i = 0; i < pos; ++i) temp = temp->next;
         
         new->val = val;
+        if(temp == *head) {
+            
+            new->prev = NULL;
+            new->next = *head;
+            (*head)->prev = new;
+            (*head) = new; 
+            
+        } else {
+
+            new->prev = temp->prev;
+            new->next = temp;
+            temp->prev->next = new;
+            temp->prev = new;
+        
+        }
+/*
         new->next = temp->next;
         new->prev = temp;
         temp->next = new;
-        
+*/        
     }
     len++;
 
@@ -45,21 +68,22 @@ void do_I(Node **head,size_t pos,unsigned short val) {
 void do_E(Node **head,size_t begin_pos,size_t end_pos) {
     if(len == 0) return;
     if(end_pos >= len ) end_pos = len-1;
+    if(begin_pos >= len ) begin_pos = len-1;
     if(begin_pos >= end_pos) return;
         
-    //if over the limit
     
     Node *start = *head;
     Node *end = *head;
     for(int i = 0; i < begin_pos; ++i) start = start->next;
     for(int i = 0; i < end_pos; ++i) end = end->next;
 
-    if(start->prev == NULL){ 
+    if(start == *head){ 
         *head = end;
     }else{ 
         start->prev->next = end; 
         end->prev = start->prev;
     }
+
     len -= (end_pos - begin_pos);
 }
 void do_P(Node  *head,size_t pos){
@@ -69,14 +93,15 @@ void do_P(Node  *head,size_t pos){
     for(int i = 0; i < pos; ++i) temp = temp->next;
     if(temp != NULL) printf("%d ", temp->val);
 }
-void do_R(Node **head,unsigned short val) {
+void do_R(Node **head, unsigned short val) {
     Node *temp = *head;
     while( temp != NULL ) {
         if( temp->val == val ) {
             Node *d = temp;
             // the left side of the temp
             // if is head
-            if(temp->prev == NULL) *head = temp->next;
+
+            if(temp == *head) *head = (*head)->next;
             else temp->prev->next = temp->next;
             
             if(temp->next == NULL) ;
@@ -84,9 +109,12 @@ void do_R(Node **head,unsigned short val) {
             
             temp = temp->next;
             free(d);
+
+            --len;
         }else{
             temp = temp->next;
         }
+        
     }
 }
 void do_S(Node  *head) {

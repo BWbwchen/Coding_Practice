@@ -1,5 +1,3 @@
-// WARNING !!! this code haven't finished !!!!
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #define DEBUG
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,72 +12,79 @@ typedef struct node
 } Node;
 
 unsigned int len = 0;
-Node *begin = NULL;
 
+// add node in front of the exist pos_th node!
 void do_I(Node **head,size_t pos,unsigned short val) {
+
+    Node *new = (Node *)malloc(sizeof(Node ));
+
+    new->val = val; 
     
     if(len == 0){
-        *head = (Node *)malloc(sizeof(Node ));
-        begin = *head;
-        begin->val = val;
-        begin->next = NULL;
-        begin->prev = NULL;
+//      head
+        *head = new;
         
+        new->next = NULL;
+        new->prev = NULL;
     }else{
-        Node *new = (Node *)malloc(sizeof(Node ));
             
         Node *temp = *head;
         if(pos >= len) {
+//          in this situation, new is the last node 
+//          go to the last node first
             while(temp->next != NULL ) temp = temp->next;
-            new->val = val;
+   
             new->next = NULL;
             new->prev = temp;
             temp->next = new;
             ++len;
             return;
         }
+//      go to the pos_th node
         for(int i = 0; i < pos; ++i) temp = temp->next;
         
-        new->val = val;
-        if(temp == *head) {
-            
+        if( temp == (*head) ) {
             new->prev = NULL;
             new->next = *head;
             (*head)->prev = new;
             (*head) = new; 
-            
         } else {
-
             new->prev = temp->prev;
             new->next = temp;
             temp->prev->next = new;
-            temp->prev = new;
-        
+            temp->prev = new; 
         }
-/*
-        new->next = temp->next;
-        new->prev = temp;
-        temp->next = new;
-*/        
     }
     len++;
 
 }
 void do_E(Node **head,size_t begin_pos,size_t end_pos) {
+//  limit 
     if(len == 0) return;
-    if(end_pos >= len ) end_pos = len-1;
-    if(begin_pos >= len ) begin_pos = len-1;
+    if(end_pos >= len ) end_pos = len;
+    if(begin_pos >= len ) begin_pos = len;
     if(begin_pos >= end_pos) return;
         
-    
+//  node start is the start node
+//  node end is the end node
+//  do not delete the end node , delete node in front of it
     Node *start = *head;
     Node *end = *head;
     for(int i = 0; i < begin_pos; ++i) start = start->next;
     for(int i = 0; i < end_pos; ++i) end = end->next;
+/*    
+    the problem say "If any input positions in the two operations above 
+    is greater than or equal to the length of the list, 
+    treat the input position as the next position of the last position at the list."
 
-    if(start == *head){ 
+    "treat the input position as the next position of the last position at the list."
+    so it is important to think about what if the end node is NULL
+*/
+    if(start == *head){
         *head = end;
-    }else{ 
+    }else if(end == NULL){
+        start->prev->next = NULL;
+    }else { 
         start->prev->next = end; 
         end->prev = start->prev;
     }
@@ -100,10 +105,9 @@ void do_R(Node **head, unsigned short val) {
             Node *d = temp;
             // the left side of the temp
             // if is head
-
             if(temp == *head) *head = (*head)->next;
             else temp->prev->next = temp->next;
-            
+            //if is the last node
             if(temp->next == NULL) ;
             else temp->next->prev = temp->prev;
             

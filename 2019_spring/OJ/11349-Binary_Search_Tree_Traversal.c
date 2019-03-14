@@ -1,3 +1,4 @@
+//WARNING!!! this code hasn't finished yet!!
 #define DEBUG
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,14 +10,73 @@ typedef struct treeNode
     struct treeNode *left;
     struct treeNode *right;
 } Node;
+//??????????????????/
+void travel(Node **temp, int goal){
+    Node *ptr = *temp;
+    if(temp->left == NULL || temp->right == NULL) return;
+    while(1){
+        if(goal < ptr->data){
+            
+        }else if(ptr->data < goal){
 
-void create_tree(Node **root, int n){
+        }
+    }
+}
+
+/*
+    if you call create() and give it root and number
+    it will build the tree
+*/
+void create(Node **root, int times){
+//  if no data
+    if(times == 0) return ;
+//  temp will travel to the what root i want
+    Node *temp = *root;
     Node *new = (Node *)malloc(sizeof(Node ));
-    
-    int num ;
+
+    int num;
     scanf("%d", &num);
-    
-    if(*root == NULL) {
+    new->data = num;
+
+    if((*root) == NULL){
+        *root = new;
+        (*root)->left = NULL;
+        (*root)_>right = NULL;
+        create(root, times-1);
+        return;
+    }
+//  travel  to what Node i want
+    while(1){
+//      left Node
+        if(num < temp->data){
+           while() 
+        }
+        else
+        {
+//      right Node
+        }
+
+
+    }
+
+
+}
+void create_tree(Node **root, int n){
+    while(n--){
+        Node *new = (Node *)malloc(sizeof(Node ));
+        int num;
+        scanf("%d", &num);
+        //root
+        if(*root == NULL){
+            *root = new;
+            (*root)->data = num;
+            (*root)->left = NULL;
+            (*root)->right = NULL;
+            continue;
+        }
+        //else 
+
+        
 
     }
 }

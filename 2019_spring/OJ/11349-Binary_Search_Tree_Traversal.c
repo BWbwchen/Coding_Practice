@@ -1,5 +1,6 @@
-//WARNING!!! this code hasn't finished yet!!
 #define DEBUG
+#define LEFT 1
+#define RIGHT 0
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -10,58 +11,29 @@ typedef struct treeNode
     struct treeNode *left;
     struct treeNode *right;
 } Node;
-//??????????????????/
-void travel(Node **temp, int goal){
+int total = 0;
+int travel(Node **temp, int goal){
     Node *ptr = *temp;
-    if(temp->left == NULL || temp->right == NULL) return;
-    while(1){
-        if(goal < ptr->data){
-            
-        }else if(ptr->data < goal){
-
+    
+    if(goal < ptr->data){
+        if( (*temp)->left == NULL) {
+            return LEFT; 
+        }else{
+            (*temp) = (*temp)->left;
+            return travel(temp, goal);
+        }
+    }else if(ptr->data < goal){
+        if ( (*temp)->right == NULL){ 
+            return RIGHT;
+        }else{
+            (*temp) = (*temp)->right;
+            return travel( temp , goal);
         }
     }
 }
 
-/*
-    if you call create() and give it root and number
-    it will build the tree
-*/
-void create(Node **root, int times){
-//  if no data
-    if(times == 0) return ;
-//  temp will travel to the what root i want
-    Node *temp = *root;
-    Node *new = (Node *)malloc(sizeof(Node ));
-
-    int num;
-    scanf("%d", &num);
-    new->data = num;
-
-    if((*root) == NULL){
-        *root = new;
-        (*root)->left = NULL;
-        (*root)_>right = NULL;
-        create(root, times-1);
-        return;
-    }
-//  travel  to what Node i want
-    while(1){
-//      left Node
-        if(num < temp->data){
-           while() 
-        }
-        else
-        {
-//      right Node
-        }
-
-
-    }
-
-
-}
 void create_tree(Node **root, int n){
+    total = n;
     while(n--){
         Node *new = (Node *)malloc(sizeof(Node ));
         int num;
@@ -70,17 +42,66 @@ void create_tree(Node **root, int n){
         if(*root == NULL){
             *root = new;
             (*root)->data = num;
-            (*root)->left = NULL;
-            (*root)->right = NULL;
+            (*root)->left = NULL; (*root)->right = NULL;
             continue;
         }
         //else 
-
-        
-
+        else{
+            Node *temp = *root;
+            int dir = 0;
+            new->data = num;
+            new->left = NULL; new->right = NULL;
+            
+            dir = travel(&temp, num);
+            
+            if(dir == LEFT){
+                temp->left = new;
+            }else if (dir == RIGHT){
+                temp->right = new;
+            }else {
+                total--;
+            }
+        }
     }
 }
+void preorder(Node *root){
+    if(root == NULL) return ;
+    printf("%d", root->data); total--;
+    if(total != 0) printf(" ");
+
+    preorder(root->left);
+    preorder(root->right);
+}
+void inorder(Node *root){
+    if(root == NULL) return ;
+    inorder(root->left);
+    printf("%d", root->data); total--;
+    if(total != 0) printf(" ");
+
+    inorder(root->right);
+}
+void postorder(Node *root){
+    if(root == NULL) return ;
+    postorder(root->left);
+    postorder(root->right);
+    printf("%d", root->data); total--;
+    if(total != 0) printf(" ");
+    
+}
 void print_tree(Node *root){
+    int temp = total;
+    printf("preorder: ");
+    preorder(root);
+    printf("\n");
+    total = temp;
+    printf("inorder: ");
+    inorder(root);
+    printf("\n");
+    total = temp;
+    printf("postorder: ");
+    postorder(root);
+    printf("\n");
+
 
 }
 void destroyTree(Node *root) {

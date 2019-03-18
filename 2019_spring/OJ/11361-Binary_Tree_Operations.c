@@ -1,4 +1,3 @@
-//WARNING !!!!!this code hasn't finished yet!!!!!
 #define DEBUG
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +11,24 @@ typedef struct treeNode
 } Node;
 
 Node* buildTree(int* inorder, int* preorder, int inorder_start, int inorder_end){
+    if(inorder_start > inorder_end) return NULL;
+    static int id = 0;
+    Node *root = (Node *)malloc (sizeof(Node ));
+    root->left = NULL; root->right = NULL;
+    root->data = preorder[id++];
 
+    if(inorder_start == inorder_end){
+        return root;
+    }else{
+        int index = inorder_start;
+        while(inorder[index] != root->data) index++;
+
+        root->left = buildTree(inorder, preorder, inorder_start, index-1);
+        root->right = buildTree(inorder, preorder, index+1, inorder_end);
+    }
+
+
+    return root;
 }
 void showPostorder(Node* root){
     if(root == NULL) return ;

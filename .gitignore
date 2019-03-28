@@ -13,3 +13,4 @@
 *.out
 *.in
 .vscode
+*.sh

@@ -1,3 +1,4 @@
+//!!!! this code haven't finished yet !!!!!
 #define DEBUG
 #define MAXN 1000
 #include <stdio.h>

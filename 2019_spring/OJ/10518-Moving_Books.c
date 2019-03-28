@@ -1,6 +1,6 @@
 //!!!! this code haven't finished yet !!!!!
 #define DEBUG
-#define MAXN 1000
+#define MAXN 10500
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -14,10 +14,14 @@ typedef struct _Node {
 Node *head = NULL;
 int total_book;
 
+int existNode[MAXN];
+
 void Build () {
     Node *temp = head;
     int i = 0;
     
+    for(int j = 0; j < total_book; ++j) existNode[j] = 1;
+
     while (i < total_book) {
         Node *new = (Node *)malloc(sizeof(Node ));
         new->index = i++;
@@ -38,14 +42,31 @@ void move_on (int under, int top) {
 
     Node **underNode = &head, **topNode = &head;
     Node *moveNode = NULL;
-
-    // Walk the list to find the Node
-
-    while ((*underNode)->index != under)
-        underNode = &(*underNode)->next;
-    while ((*topNode)->index != top)
-        topNode = &(*topNode)->next;
     
+    // Walk the list to find the Node
+    int find_u = 0, find_t = 0;
+    while (!find_u || !find_t){
+        if(!find_u && (*underNode) != NULL && (*underNode)->index != under){
+            underNode = &(*underNode)->next;
+        }else{
+            find_u = 1;
+        }
+        if(!find_t && (*topNode) != NULL && (*topNode)->index != top){
+            topNode = &(*topNode)->next;
+        }else{
+            find_t = 1;
+        }
+
+    }
+
+/*
+
+    while ((*underNode) != NULL && (*underNode)->index != under )
+        underNode = &(*underNode)->next;
+    while ((*topNode) != NULL && (*topNode)->index != top )
+        topNode = &(*topNode)->next;
+ */   
+    if(!(*underNode) || !(*topNode)) return ;
     //copy moveNode first
     moveNode = *underNode;
     //update the underNode to the next
@@ -57,29 +78,54 @@ void move_on (int under, int top) {
 }
 
 void move_under (int top, int under) {
+    // topNode point to the Node
+    // that we will do something on it
 
     Node **underNode = &head, **topNode = &head;
     Node *moveNode = NULL;
 
-    while ((*underNode)->index != under)
-        underNode = &(*underNode)->next;
-    while ((*topNode)->index != top)
-        topNode = &(*topNode)->next;
+    //walk to the target Node
 
+    int find_u = 0, find_t = 0;
+    while (!find_u || !find_t){
+        if(!find_u && (*underNode) != NULL && (*underNode)->index != under){
+            underNode = &(*underNode)->next;
+        }else{
+            find_u = 1;
+        }
+        if(!find_t && (*topNode) != NULL && (*topNode)->index != top){
+            topNode = &(*topNode)->next;
+        }else{
+            find_t = 1;
+        }
+
+    }
+/*
+    while ((*underNode) != NULL && (*underNode)->index != under )
+        underNode = &(*underNode)->next;
+    while ((*topNode) != NULL && (*topNode)->index != top )
+        topNode = &(*topNode)->next;
+*/
+    if(!(*underNode) || !(*topNode)) return ;
+    //copy the moveNode 
     moveNode = *topNode;
+    //update the topNode to the next
     *topNode = (*topNode)->next;
+    // moveNode's next is the underNode
     moveNode->next = *underNode;
+    //update the underNode
     *underNode = moveNode;
 }
 
 void remove_Node (int target) {
-    
     Node **indirect = &head;
 
-    while ( (*indirect)->index != target ) 
+    while ( (*indirect) != NULL && (*indirect)->index != target ) 
         indirect = &(*indirect)->next;
 
-    *indirect = (*indirect)->next;
+    if(!(*indirect)) return ;
+    if((*indirect)->index == target) 
+        *indirect = (*indirect)->next;
     
 }
 
@@ -114,15 +160,17 @@ int main (){
             if (a == b) continue;
             if (a >= total_book || b >= total_book) continue;
 
-            if (strcmp(on_or_down, "on") == 0) move_on(a, b);
-            else if (strcmp(on_or_down, "under") == 0) move_under(a, b);
+            if (strcmp(on_or_down, "on") == 0 && existNode[a] && existNode[b]) move_on(a, b);
+            else if (strcmp(on_or_down, "under") == 0 && existNode[a] && existNode[b]) move_under(a, b);
             else ;
 
             //print_list();
 
         } else if (strcmp(move, "remove") == 0) {
+            
             scanf("%d", &a);
-            remove_Node(a);
+            if(a < total_book && existNode[a]) remove_Node(a);
+            else continue;
             //print_list();
 
         } else if (strcmp(move, "exit") == 0) {

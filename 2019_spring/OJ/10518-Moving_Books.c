@@ -32,61 +32,57 @@ void Build () {
 }
 
 void move_on (int under, int top) {
-    Node *under_Node = head, *top_Node = head;
-    Node *pre_under_Node = head;
+    // underNode point to the *address*
+    // which we will do something on it
+
+    Node **underNode = &head, **topNode = &head;
+    Node *moveNode = NULL;
+
+    // Walk the list to find the Node
+
+    while ((*underNode)->index != under)
+        underNode = &(*underNode)->next;
+    while ((*topNode)->index != top)
+        topNode = &(*topNode)->next;
     
-    while (under_Node->index != under) {
-        pre_under_Node = under_Node;
-        under_Node = under_Node->next;
-    }
-    while (top_Node->index != top) {
-        top_Node = top_Node->next;
-    }
-
-    if(under_Node == head) head = under_Node->next;
-    else pre_under_Node->next = under_Node->next;
-    under_Node->next = top_Node->next;
-    top_Node->next = under_Node;
-
+    //copy moveNode first
+    moveNode = *underNode;
+    //update the underNode to the next
+    *underNode = (*underNode)->next;
+    //the next of moveNode is the next of topNode
+    moveNode->next = (*topNode)->next;
+    //update the topNode
+    (*topNode)->next = moveNode;
 }
 
 void move_under (int top, int under) {
-    
-    Node *under_Node = head, *top_Node = head;
-    Node *pre_under_Node = head, *pre_top_Node = head;
-    
-    while (top_Node->index != top) {
-        pre_top_Node = top_Node;
-        top_Node = top_Node->next;
-    }
-    while (under_Node->index != under) {
-        pre_under_Node = under_Node;
-        under_Node = under_Node->next;
-    }
 
-    if(top_Node == head) head = top_Node->next;
-    else pre_top_Node->next = top_Node->next;
-    pre_under_Node->next = top_Node;
-    top_Node->next = under_Node;
-        
+    Node **underNode = &head, **topNode = &head;
+    Node *moveNode = NULL;
+
+    while ((*underNode)->index != under)
+        underNode = &(*underNode)->next;
+    while ((*topNode)->index != top)
+        topNode = &(*topNode)->next;
+
+    moveNode = *topNode;
+    *topNode = (*topNode)->next;
+    moveNode->next = *underNode;
+    *underNode = moveNode;
 }
 
 void remove_Node (int target) {
-    Node *pre = head, *del = head;
-    while (del->index != target) {
-        pre = del;
-        del = del->next;
-    }
-    if (del == head) {
-        head = del->next;
-    } else {
-        pre->next = del->next;
-    }
-    free(del);
+    
+    Node **indirect = &head;
+
+    while ( (*indirect)->index != target ) 
+        indirect = &(*indirect)->next;
+
+    *indirect = (*indirect)->next;
+    
 }
 
 void print_list () {
-    if(head == NULL || !total_book) return;
     
     Node *temp = head;
 

@@ -1,4 +1,3 @@
-//!!!! this code haven't finished yet !!!!!
 #define DEBUG
 #define MAXN 10500
 #include <stdio.h>
@@ -14,16 +13,17 @@ typedef struct _Node {
 Node *head = NULL;
 int total_book;
 
-int existNode[MAXN];
+Node* existNode[MAXN];
 
 void Build () {
     Node *temp = head;
     int i = 0;
+    // 1 for book exist
     
-    for(int j = 0; j < total_book; ++j) existNode[j] = 1;
 
     while (i < total_book) {
         Node *new = (Node *)malloc(sizeof(Node ));
+        existNode[i] = new;
         new->index = i++;
         new->next = NULL;
         if(head == NULL){
@@ -38,34 +38,15 @@ void Build () {
 
 void move_on (int under, int top) {
     // underNode point to the *address*
-    // which we will do something on it
+    // of what we will do something on it
 
     Node **underNode = &head, **topNode = &head;
     Node *moveNode = NULL;
     
-    // Walk the list to find the Node
-    int find_u = 0, find_t = 0;
-    while (!find_u || !find_t){
-        if(!find_u && (*underNode) != NULL && (*underNode)->index != under){
-            underNode = &(*underNode)->next;
-        }else{
-            find_u = 1;
-        }
-        if(!find_t && (*topNode) != NULL && (*topNode)->index != top){
-            topNode = &(*topNode)->next;
-        }else{
-            find_t = 1;
-        }
+    // Walk the list to find the Nodeo
+    underNode = &existNode[under];
+    topNode = &existNode[top];
 
-    }
-
-/*
-
-    while ((*underNode) != NULL && (*underNode)->index != under )
-        underNode = &(*underNode)->next;
-    while ((*topNode) != NULL && (*topNode)->index != top )
-        topNode = &(*topNode)->next;
- */   
     if(!(*underNode) || !(*topNode)) return ;
     //copy moveNode first
     moveNode = *underNode;
@@ -78,34 +59,16 @@ void move_on (int under, int top) {
 }
 
 void move_under (int top, int under) {
-    // topNode point to the Node
-    // that we will do something on it
+    // topNode point to the *address*
+    // of what we will do something on it
 
     Node **underNode = &head, **topNode = &head;
     Node *moveNode = NULL;
 
     //walk to the target Node
+    underNode = &existNode[under];
+    topNode = &existNode[top];
 
-    int find_u = 0, find_t = 0;
-    while (!find_u || !find_t){
-        if(!find_u && (*underNode) != NULL && (*underNode)->index != under){
-            underNode = &(*underNode)->next;
-        }else{
-            find_u = 1;
-        }
-        if(!find_t && (*topNode) != NULL && (*topNode)->index != top){
-            topNode = &(*topNode)->next;
-        }else{
-            find_t = 1;
-        }
-
-    }
-/*
-    while ((*underNode) != NULL && (*underNode)->index != under )
-        underNode = &(*underNode)->next;
-    while ((*topNode) != NULL && (*topNode)->index != top )
-        topNode = &(*topNode)->next;
-*/
     if(!(*underNode) || !(*topNode)) return ;
     //copy the moveNode 
     moveNode = *topNode;
@@ -119,13 +82,12 @@ void move_under (int top, int under) {
 
 void remove_Node (int target) {
     Node **indirect = &head;
-
-    while ( (*indirect) != NULL && (*indirect)->index != target ) 
-        indirect = &(*indirect)->next;
+    indirect = &existNode[target];
 
     if(!(*indirect)) return ;
     if((*indirect)->index == target) 
         *indirect = (*indirect)->next;
+    existNode[target] = NULL;
     
 }
 

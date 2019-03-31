@@ -14,6 +14,7 @@ typedef struct _Node {
 }Node;
 
 int buf[MAXN];
+int sum = 0;
 
 int travel (Node **head, int target) 
 {
@@ -23,43 +24,44 @@ int travel (Node **head, int target)
             *head = (*head)->left;
             return travel( head, target);
         }
-    }else
+    } else
     if ((*head)->data < target) {
         if ((*head)->right == NULL) return RIGHT;
         else { 
             *head = (*head)->right;
             return travel( head, target);
         }
-    }
+    } else return -1;
 }
 
-Node* BuildTree (Node *head, int total) 
+void BuildTree (Node **head, int total) 
 {
-    static int index = 0;
-    if(index == total) return NULL;
+    while (total--) {
+        Node *new = (Node *)malloc(sizeof(Node ));
+        scanf("%d", &new->data);
+        new->right = NULL; new->left = NULL;
 
-    Node *root = (Node *)malloc(sizeof(Node ));
-    root->data = buf[index++];
-    
-    Node *father = head;
-    int dir = RIGHT;
-    dir = travel(&father, root->data);
+        if (*head == NULL) *head = new;
+        else {
+            Node *father = *head;
+            int dir = RIGHT;
+            dir = travel (&father, new->data);
 
-    if (dir == RIGHT) {
-        root->right = BuildTree(root, total);
-    }else
-    if (dir == LEFT) {
-        root->left = BuildTree(root, total);
+            if (dir == RIGHT) {
+                father->right = new;
+            } else 
+            if (dir == LEFT) {
+                father->left = new;
+            }
+        }
+
     }
-
-    return root;
-
-
 }
 
 int GetMax (Node *head)
 {
-    if (head->left == NULL &7 head->right) return 1;
+    if (head == NULL) return 0;
+    if (head->left == NULL && head->right == NULL) return 1;
     
     int left = 0, right = 0;
     left = GetMax(head->left);
@@ -67,6 +69,16 @@ int GetMax (Node *head)
 
     if (left > right) return left+1;
     else return right+1;
+}
+
+int SumLevel (Node *root, int level)
+{
+    if (root == NULL) return 0;
+    if (level == 1) { 
+        sum++; 
+        return root->data;
+    }
+    return SumLevel(root->left, level-1) + SumLevel(root->right, level-1);
 }
 
 void printTree (Node *head) 
@@ -88,25 +100,38 @@ int main ()
     char command[MAXN];
 
     scanf("%d", &total_Node);
-    for (int i = 0; i < total_Node; ++i) scanf("%d", &buf[i]);
-    root = BuildTree(root, total_Node);
+    BuildTree(&root, total_Node);
+    
     scanf("%d", &num);
 
     while (num--) {
         scanf(" %s",  command);
+        int level;
 
         if (command[0] == 'P') {
-            if (root == NULL) printf("NULL\n");
-            else printTree(root);
-        }
-        else if (command[0] == 'G') {
+            if (root == NULL) printf("NULL");
+            else printTree(root); 
+            printf("\n");
+        } else 
+        if (command[0] == 'G') {
             printf("%d\n", GetMax(root));
-        }
-        else if (command[0] == 'S') {
-            SumLevel(root);
-        }
-        else if (command[0] == 'A') {
-            AverLevel(root);
+        }else
+        if (command[0] == 'S') {
+            scanf(" %d", &level);
+            if (level <= 0 || level > GetMax(root)) printf("0\n");
+            else printf("%d\n", SumLevel(root, level));
+        } else
+        if (command[0] == 'A') {
+            scanf(" %d", &level);
+            if (level <= 0 || level > GetMax(root)) {
+                printf("0\n");
+                continue;
+            }
+
+            sum = 0;
+            double ans = (double)SumLevel(root, level);
+            ans /= (double)sum;
+            printf("%.3f\n", ans);
         }
     }
 

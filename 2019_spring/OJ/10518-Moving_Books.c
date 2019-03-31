@@ -37,23 +37,34 @@ void Build () {
 }
 
 void move_on (int under, int top) {
-    // underNode point to the *address*
-    // of what we will do something on it
-
     Node *underNode = head, *topNode = head;
+
     // Walk the list to find the Nodeo
     while (underNode->index != under) underNode = underNode->next;
     while (topNode->index != top) topNode = topNode->next;
+/*
+    the outline of the operation is : 
+    (but need to consider such like head or tail)
+    underNode->pre->next = underNode->next;
+    underNode->next->pre = underNode->pre;
+    underNode->pre = topNode;
+    underNode->next = topNode->next;
+    topNode->next->prev = underNode;
+    topNode->next = underNode;
 
+*/
     if (underNode == head) {
         head = underNode->next;
+        head->pre = NULL;
     } else {
         underNode->pre->next = underNode->next;   
     }
 
+    if (underNode->next == NULL) {
 
-    //underNode->pre->next = underNode->next;
-    underNode->next->pre = underNode->pre;
+    } else {
+        underNode->next->pre = underNode->pre;
+    }
 
     underNode->pre = topNode;
     underNode->next = topNode->next;
@@ -63,7 +74,6 @@ void move_on (int under, int top) {
     } else {
         topNode->next->pre = underNode;
     }
-    //topNode->next->prev = underNode;
     topNode->next = underNode;
 
 
@@ -71,30 +81,36 @@ void move_on (int under, int top) {
 }
 
 void move_under (int under, int top) {
-    // topNode point to the *address*
-    // of what we will do something on it
-    
-    
     Node *underNode = head, *topNode = head;
+
     // Walk the list to find the Nodeo
     while (underNode->index != under) underNode = underNode->next;
     while (topNode->index != top) topNode = topNode->next;
-    
+/*
+    the outline of the operation is : 
+    (but need to consider such like head or tail)
+    underNode->pre->next = underNode->next;
+    underNode->next->pre = underNode->pre;
+    topNode->pre->next = underNode;
+    underNode->pre = topNode->pre;
+    topNode->pre = underNode;
+    underNode->next = topNode;
+
+*/    
 
     if (underNode == head) {
         head = underNode->next;
+        head->pre = NULL;
     } else {
         underNode->pre->next = underNode->next;   
     }
 
     if (underNode->next == NULL) {
-         
+        
     } else {
         underNode->next->pre = underNode->pre;
     }
 
-    //underNode->pre->next = underNode->next;
-    //underNode->next->pre = underNode->pre;
 
     if (topNode == head) {
         head = underNode;
@@ -102,13 +118,11 @@ void move_under (int under, int top) {
         topNode->pre->next = underNode;
     }
     
-    //topNode->pre->next = underNode;
     underNode->pre = topNode->pre;
 
 
     topNode->pre = underNode;
     underNode->next = topNode;
-
 }
 
 void remove_Node (int target) {
@@ -116,10 +130,21 @@ void remove_Node (int target) {
     Node *indirect = head;
     while (indirect->index != target) indirect = indirect->next;
     Node *del = indirect;
+/*
+    the outline of the operation is :
+    (need consider such like head or tail)
+    indirect->pre->next = indirect->next;
+    indirect->next->pre = indirect->pre;
+*/
+
     if (indirect == head) {
         head = indirect->next;
+        if (head == NULL) ;
+        else head->pre = NULL;
     } else {
         indirect->pre->next = indirect->next;
+        if (indirect->next == NULL) ;
+        else indirect->next->pre = indirect->pre;
     }
     existNode[target] = 0;
     free(del);
@@ -163,7 +188,7 @@ int main (){
 
             if (on_or_down[0] == 'o' && existNode[a] && existNode[b]) move_on(a, b);
             else if (on_or_down[0] == 'u' && existNode[a] && existNode[b]) move_under(a, b);
-            else ;
+            else continue;
 
             //print_list();
 

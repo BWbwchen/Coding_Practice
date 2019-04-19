@@ -12,7 +12,7 @@ module tb();
 	reg [1:0] din;
 	reg [31:0] score;
 	
-	ALU alu(.A(A), .B(B), .sel(sel), .Cin(Cin), .Y(Y), .Zero(Zero));
+	ALU alu (.A(A), .B(B), .sel(sel), .Cin(Cin), .Y(Y), .Zero(Zero));
 	
 	initial begin
 		`ifdef SDF

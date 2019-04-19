@@ -1,5 +1,6 @@
 #define DEBUG
 #include <bits/stdc++.h>
+
 //can try use vector to do 
 using namespace std;
 
@@ -24,7 +25,8 @@ int main (int argc, char **argv)
 
         int total;
         cin >> total;
-        int record[total];
+        vector<int > record;
+        record.resize(total);
         for (int i = 0; i < total; ++i) cin >> record[i];
 
         for (int i = total-1; i > 0; --i) {

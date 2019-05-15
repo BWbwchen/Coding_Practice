@@ -1,0 +1,25 @@
+#   1. Virtual Library Setup for NTHU VLSI/CAD Lab
+#   2. Copy this file synopsys_dc.setup to .synopsys_dc.setup
+#      and put it in tool's invoking directory or home.
+set company "NTHU"
+set designer "YLLab"
+set search_path       "/theda21_2/CBDK_IC_Contest/cur/SynopsysDC/db $search_path"
+set target_library    "slow.db fast.db"
+set link_library      "slow.db fast.db dw_foundation.sldb"
+set symbol_library    "generic.sdb"
+set synthetic_library "dw_foundation.sldb"
+
+set verilogout_no_tri true
+set hdlin_enable_presto_for_vhdl true
+set sh_enable_line_editing true
+history keep 100
+alias h history
+
+set bus_inference_style {%s[%d]}
+set bus_naming_style {%s[%d]}
+set hdlout_internal_busses true
+define_name_rules name_rule -allowed {a-z A-Z 0-9 _} -max_length 255 -type cell
+define_name_rules name_rule -allowed {a-z A-Z 0-9 _[]} -max_length 255 -type net
+define_name_rules name_rule -map {{"\\*cell\\*" "cell"}}
+
+

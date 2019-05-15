@@ -139,7 +139,7 @@ namespace oj
             //std::cout << "QQ\n";
             return ;
         }
-        if (capacity() < size() + count) {
+        if (capacity() <= size() + count) {
             data_t index = std::max(capacity() + capacity()/2, capacity() + count);
             data_t* temp = new data_t [index];
             if (begin_ == nullptr) {
@@ -151,21 +151,27 @@ namespace oj
                 end_ = begin_ + index - 1;
             }
             else {
+                data_t s = size();
                 data_t big = std::max(pos+count, size());
                 for (size_t i = 0; i < pos; ++i) temp[i] = begin_[i];
                 for (size_t i = pos; i < pos + count; ++i) temp[i] = val;
-                for (size_t i = pos+count; i < size(); ++i) temp[i] = begin_[i];
+                for (size_t i = pos+count; i < s + count; ++i) temp[i] = begin_[i - count];
                 data_t* old = begin_;
                 begin_ = temp;
-                last_ = begin_ + big - 1;
+                last_ = begin_ + count + s - 1;
                 end_ = begin_ + index - 1;
                 delete [] old;
             }
             //delete [] temp;
         }
         else {
+            data_t *temp = new data_t [capacity()];
+            data_t s = size();
+            for (size_t i = 0; i < s; ++i) temp[i] = begin_[i]; 
             for (size_t i = pos; i < pos + count; ++i) begin_[i] = val;
-            last_ = begin_ + (pos + count - 1);
+            for (size_t i = pos+count; i < s + count; ++i) begin_[i] = temp[i - count];
+            last_ = begin_ + s + count - 1;
+            delete [] temp;
         }
     }
     /*

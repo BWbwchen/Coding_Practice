@@ -3,7 +3,7 @@
 
 using namespace std;
 
-class BST{ // pure virtual 
+class BST{ // pure virtual
 public:
     BST():Height(0){}
     virtual ~BST() {}

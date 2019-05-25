@@ -1,7 +1,6 @@
 /*
-    function operator++
-    is not sure
-    cause the problem's main function is kinda wierd
+    if have no idea 
+    google binaty tree travel without recursion
 */
 #define DEBUG
 #include <bits/stdc++.h>
@@ -112,14 +111,22 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+struct Content
+{
+    stack <Node *> st;
+};
+
+
 Iterator::Iterator(Node *root)
 {
-    data = root;
+    data = new Content;
+    ((Content *)data)->st.push(nullptr);
+    ((Content *)data)->st.push(root);
 }
 
-Iterator::Iterator(const Iterator &other)
+Iterator::Iterator(const Iterator &other) // copy constructor
 {
-    data = other.data;
+    ((Content *)data)->st = ((Content *)(other.data))->st;
 }
 
 Iterator::~Iterator()
@@ -129,15 +136,18 @@ Iterator::~Iterator()
 
 int Iterator::operator*() const
 {
-    return ((Node *)data)->value;
+    return (((Content *)data)->st.top())->value;
 }
 
 bool Iterator::operator!=(const Iterator &it) const
 {
-    return ((it.data) != data) ? true : false;
+    return ((Content *)data)->st.top()!=((Content *)(it.data))->st.top();
 }
 
 void Iterator::operator++(int dummy)
 {
-    data = ((Node *)data)->left;
+    Node *root = ((Content *)data)->st.top();
+    ((Content *)data)->st.pop();
+    if (root->right) ((Content *)data)->st.push(root->right);
+    if (root->left) ((Content *)data)->st.push(root->left);
 }

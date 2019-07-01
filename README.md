@@ -10,6 +10,10 @@ This is the code I write for school, for recording what I learned.
 
 The code I write at NTHU 2019 spring.
 
+### [`2019_autumn`](2019_autumn/)
+
+The code I write and learn at NTHU 2019 autumn
+
 ### [`algorithm`](algorithm/)
 
 I use my thought to rewrite and record how algorithm work.

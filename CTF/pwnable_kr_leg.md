@@ -5,6 +5,7 @@ key point :
 
 see code first !
 leg.c:
+
 ``` c
 #include <stdio.h>
 #include <fcntl.h>

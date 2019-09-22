@@ -25,13 +25,13 @@ drwxr-xr-x   2 root root             4096 Oct 23  2016 .pwntools-cache
 -r-xr-sr-x   1 root shellshock_pwn   8547 Oct 12  2014 shellshock
 -r--r--r--   1 root root              188 Oct 12  2014 shellshock.c
 ```
-
+```
           link number   file group
              |              |
 -r-xr-sr-x   1 root shellshock_pwn   8547 Oct 12  2014 shellshock
     |            |                     
 file permission  owner
-
+```
 ## 檔案屬性
 ```
 -r--r-----   1 root shellshock_pwn     47 Oct 12  2014 flag

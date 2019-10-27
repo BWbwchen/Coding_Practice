@@ -35,7 +35,7 @@ void josephus(int m, Node *head){
     Node *now = head;
     while(num != 1){
         //find the node before target
-        for (int i = 1; i <= m-2; ++i) now = now->next;
+        for (int i = 1; i <= (m-2) % num; ++i) now = now->next;
         Node *del = now->next;
         printf("%d ", del->data);
         num--;

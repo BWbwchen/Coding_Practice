@@ -6,13 +6,13 @@ This is the code I write for school, for recording what I learned.
 
 ## Directories
 
-### [`2019_spring`](2019_spring/)
+### [`codeforce`](codeforce/)
 
-The code I write at NTHU 2019 spring.
+codeforce solution
 
-### [`2019_autumn`](2019_autumn/)
+### [`leetcode`](leetcode/)
 
-The code I write and learn at NTHU 2019 autumn
+leetcode solution
 
 ### [`algorithm`](algorithm/)
 
@@ -21,7 +21,3 @@ I use my thought to rewrite and record how algorithm work.
 ### [`Verilog`](Verilog/)
 
 The verilog homework that I do for digital design class.
-
-### [`winter_vacation_coding`](winter_vacation_coding/)
-
-The code I write at 2018 winter vacation.

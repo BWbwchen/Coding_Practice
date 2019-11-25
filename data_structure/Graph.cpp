@@ -1,14 +1,32 @@
 #define DEBUG
 #define MAXN 1e9
 #include <bits/stdc++.h>
+#define PRIM 1
 
 using namespace std;
+class Node {
+    public : 
+        int index;
+        int parent; /* -1 for root */
+        int key;
+        Node () {
+            index = 0; 
+            parent = -1;
+            key = MAXN;
+        }
+        Node (int i , int p = -1, int k = MAXN) {
+            index = i;
+            parent = p;
+            key = k;
+        }
+};
 
 class Graph {
     private :
         int **graph;
         int vertex;
         vector<bool> visited;
+        Node *node;
     public :
         Graph (int total) {
             vertex = total;
@@ -23,6 +41,7 @@ class Graph {
                     else graph[i][j] = MAXN;
                 }
             }
+            node = new Node [vertex];
             visited.resize(vertex, false);
         }
         void build () {
@@ -96,6 +115,61 @@ class Graph {
                 }
             }
         }
+        void spanning_tree (int method) {
+            if (method == PRIM) prim();
+        }
+        /*
+        bool cmp (Node a, Node b) {
+            return a.key > b.key;
+        }
+        */
+        Node Min_Node (vector<Node >& my_pq) {
+            auto cmp = [](Node a, Node b) {return a.key < b.key;};
+            sort(my_pq.begin(), my_pq.end(), cmp); 
+            Node temp = my_pq[my_pq.size()-1];
+            my_pq.pop_back();
+            return temp;
+        }
+        void prim () {
+            // initial
+            vector<bool > gone(vertex);
+            fill(gone.begin(), gone.end(), false);
+            for (int i = 0; i < vertex; ++i) {
+                node[i].index = i;
+                node[i].key = MAXN;
+                node[i].parent = -1;
+            }
+            node[0].key = 0;
+            
+            // prim
+           for (int i = 0; i < vertex; ++i) {
+                // find the min key node to deal 
+                int min = MAXN;
+                int min_index = -1;
+                for (int j = 0; j < vertex; ++j) {
+                    if (!gone[j] && min > node[j].key ) {
+                        min = node[j].key;
+                        min_index = j;
+                    }
+                }
+                gone[min_index] = true;
+                // update the near node's key
+                for (int j = 0; j < vertex; ++j) {
+                    if (graph[min_index][j] != MAXN &&
+                        !gone[j] &&
+                        node[j].key > graph[min_index][j]){
+                        node[j].key = graph[min_index][j];
+                        node[j].parent = min_index;
+                    }
+                }
+           }
+
+            // print result
+            for (int i = 0; i < vertex; ++i) {
+                cout << (char)(node[i].parent + 'A') << "--> " << (char)(node[i].index + 'A') << endl;
+            }
+            
+        }
 
 };
 
@@ -110,7 +184,8 @@ int main ()
 
     t.build();
     //t.dfs();
-    t.bfs();
+    //t.bfs();
+    t.spanning_tree(PRIM); 
     
 
     return 0;

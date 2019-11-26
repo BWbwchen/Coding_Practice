@@ -2,6 +2,8 @@
 #define MAXN 1e9
 #include <bits/stdc++.h>
 #define PRIM 1
+#define KRUSAL 2
+
 
 using namespace std;
 class Node {
@@ -18,6 +20,57 @@ class Node {
             index = i;
             parent = p;
             key = k;
+        }
+};
+class disjoint_set {
+    public :
+        struct n {
+            int parent;
+            int rank;
+        };
+        int total;
+        struct n *sset;
+
+        disjoint_set (int a) {
+            total = a;
+            sset = new struct n [total];
+            for (int i = 0; i < total; ++i) {
+                sset[i].parent = i;
+                sset[i].rank = 0;
+            }
+        }
+        int find (int u) {
+            if (u != sset[u].parent) 
+                sset[u].parent = find(sset[u].parent);
+            return sset[u].parent;
+        }
+        void _union (int u, int v) {
+            int u_set = find(u);
+            int v_set = find(v);
+            if (sset[u_set].rank < sset[v_set].rank) {
+                sset[u_set].parent = v_set;
+            } else if (sset[u_set].rank > sset[v_set].rank ) {
+                sset[v_set].parent = u_set;
+            } else {
+                sset[u_set].parent = v_set;
+                sset[v_set].rank++;
+            }
+        }
+};
+
+class edge {
+    public :
+        int weight;
+        int v1;
+        int v2;
+
+        edge (int w, int a1, int a2) {
+            weight = w;
+            v1 = a1;
+            v2 = a2;
+        }
+        bool operator<(const edge& rhs) {
+            return this->weight < rhs.weight;
         }
 };
 
@@ -117,18 +170,7 @@ class Graph {
         }
         void spanning_tree (int method) {
             if (method == PRIM) prim();
-        }
-        /*
-        bool cmp (Node a, Node b) {
-            return a.key > b.key;
-        }
-        */
-        Node Min_Node (vector<Node >& my_pq) {
-            auto cmp = [](Node a, Node b) {return a.key < b.key;};
-            sort(my_pq.begin(), my_pq.end(), cmp); 
-            Node temp = my_pq[my_pq.size()-1];
-            my_pq.pop_back();
-            return temp;
+            else if (method == KRUSAL) krusal();
         }
         void prim () {
             // initial
@@ -139,7 +181,7 @@ class Graph {
                 node[i].key = MAXN;
                 node[i].parent = -1;
             }
-            node[0].key = 0;
+            node[vertex-1].key = 0;
             
             // prim
            for (int i = 0; i < vertex; ++i) {
@@ -169,6 +211,32 @@ class Graph {
                 cout << (char)(node[i].parent + 'A') << "--> " << (char)(node[i].index + 'A') << endl;
             }
             
+
+        }
+        void krusal() {
+            vector<edge > sorted;
+            for (int i = 0; i < vertex; ++i) {
+                for (int j = i+1; j < vertex; ++j) {
+                    if (graph[i][j] !=  MAXN) { 
+                        sorted.push_back(edge(graph[i][j], i, j)); 
+                    }
+                }
+            }
+            sort(sorted.begin(), sorted.end());
+            disjoint_set ans(vertex);
+            vector<edge > ans_edge;
+
+            // for each edge
+            for (int i = 0; i < vertex; ++i) {
+                // if the edge node not cause a cycle
+                if (ans.find(sorted[i].v1) != ans.find(sorted[i].v2)) {
+                    ans_edge.push_back(sorted[i]);
+                    ans._union(sorted[i].v1, sorted[i].v2);
+                }
+            }
+            for (int i = 0; i < ans_edge.size(); ++i) {
+                cout << (char)(ans_edge[i].v1 + 'A') << "--> " << (char)(ans_edge[i].v2+'A') << endl;
+            }
         }
 
 };
@@ -185,7 +253,8 @@ int main ()
     t.build();
     //t.dfs();
     //t.bfs();
-    t.spanning_tree(PRIM); 
+    //t.spanning_tree(PRIM); 
+    t.spanning_tree(KRUSAL); 
     
 
     return 0;

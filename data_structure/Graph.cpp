@@ -6,6 +6,7 @@
 #define DIJKSTRA 3
 #define BELLMAN 4
 #define FLOYD 5
+#define SOLLIN 6
 
 
 using namespace std;
@@ -71,6 +72,11 @@ class edge {
             weight = w;
             v1 = a1;
             v2 = a2;
+        }
+        edge () {
+            weight = MAXN;
+            v1 = -1;
+            v2 = -1;
         }
         bool operator<(const edge& rhs) {
             return this->weight < rhs.weight;
@@ -170,10 +176,12 @@ class Graph {
                     }
                 }
             }
+            cout << endl;
         }
         void spanning_tree (int method) {
             if (method == PRIM) prim();
             else if (method == KRUSAL) krusal();
+            else if (method == SOLLIN) sollin();
         }
         void prim () {
             // initial
@@ -211,7 +219,7 @@ class Graph {
 
             // print result
             for (int i = 0; i < vertex; ++i) {
-                cout << (char)(node[i].parent + 'A') << "--> " << (char)(node[i].index + 'A') << endl;
+                cout << (char)(node[i].parent + 'A') << " --- " << (char)(node[i].index + 'A') << endl;
             }
             
 
@@ -238,9 +246,57 @@ class Graph {
                 }
             }
             for (int i = 0; i < ans_edge.size(); ++i) {
-                cout << (char)(ans_edge[i].v1 + 'A') << "--> " << (char)(ans_edge[i].v2+'A') << endl;
+                cout << (char)(ans_edge[i].v1 + 'A') << " --- " << (char)(ans_edge[i].v2+'A') << endl;
             }
         }
+
+        void sollin() {
+            vector<edge > cheap(vertex);
+            disjoint_set ans(vertex);
+            int num_component = vertex;
+            vector<edge > ans_edge;
+
+            while (num_component > 1) {
+                // min cost
+                for (int i = 0; i < vertex; ++i) {
+                    cheap[i] = edge(MAXN, i, i); // no cheap
+                }
+                // update cheap
+                for (int i = 0; i < vertex; ++i) {
+                    for (int j = 0; j < vertex; ++j) {
+                        if (graph[i][j] != MAXN) {
+                            int set_i = ans.find(i);
+                            int set_j = ans.find(j);
+                            if (set_i == set_j) continue;
+                            
+                            if (cheap[set_i].weight == MAXN || cheap[set_i].weight > graph[i][j]) 
+                                cheap[set_i] = edge(graph[i][j], i, j);
+                            if (cheap[set_j].weight == MAXN || cheap[set_j].weight > graph[i][j]) 
+                                cheap[set_j] = edge(graph[i][j], i, j);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < vertex; ++i) {
+                    if (cheap[i].weight != MAXN) {
+                        // TODO : if no this will error
+                        // but dont know why
+                        int set1 = ans.find(cheap[i].v1);
+                        int set2 = ans.find(cheap[i].v2);
+                        if (set1 == set2) continue;
+                        ans_edge.push_back(cheap[i]);
+                        ans._union(cheap[i].v1, cheap[i].v2);
+                        num_component--;
+                    }
+                }
+            
+            }
+
+            for (int i = 0; i < ans_edge.size(); ++i) {
+                cout << (char)(ans_edge[i].v1 + 'A') << " --- " << (char)(ans_edge[i].v2+'A') << endl;
+            }
+        }
+
         void single_source_shortest_path (int method, int start) {
             if (method == DIJKSTRA) dijkstra(start);
             else if (method == BELLMAN) bellman(start);
@@ -350,11 +406,19 @@ int main ()
     Graph t(total);
 
     t.build();
-    //t.dfs();
-    //t.bfs();
-    //t.spanning_tree(PRIM); 
-    //t.spanning_tree(KRUSAL); 
+    cout << "---------dfs---------\n";
+    t.dfs();
+    cout << "---------bfs---------\n";
+    t.bfs();
+    cout << "-------------spanning tree-------------\n";
+    cout << "prim \n";
+    t.spanning_tree(PRIM); 
+    cout << "KRUSAL \n";
+    t.spanning_tree(KRUSAL); 
+    cout << "SOLLIN \n";
+    t.spanning_tree(SOLLIN); 
     
+    cout << "------------single_source_shortest_path-------------\n";
     cout << "dijkstra \n";
     t.single_source_shortest_path(DIJKSTRA, 0);
     cout << "bellman \n";
@@ -366,3 +430,18 @@ int main ()
     return 0;
 }
 
+/*
+testcase :
+8
+10
+0 1 1
+0 2 2
+1 3 3
+1 4 6
+2 5 5
+2 6 4
+3 7 7
+4 7 3
+5 7 2
+6 7 1
+ */

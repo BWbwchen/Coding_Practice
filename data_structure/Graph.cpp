@@ -3,6 +3,9 @@
 #include <bits/stdc++.h>
 #define PRIM 1
 #define KRUSAL 2
+#define DIJKSTRA 3
+#define BELLMAN 4
+#define FLOYD 5
 
 
 using namespace std;
@@ -238,6 +241,102 @@ class Graph {
                 cout << (char)(ans_edge[i].v1 + 'A') << "--> " << (char)(ans_edge[i].v2+'A') << endl;
             }
         }
+        void single_source_shortest_path (int method, int start) {
+            if (method == DIJKSTRA) dijkstra(start);
+            else if (method == BELLMAN) bellman(start);
+            else if (method == FLOYD) floyd(start);
+        }
+        void dijkstra (int start) {
+            vector<int > cost(vertex);
+            fill(cost.begin(), cost.end(), MAXN);
+            vector<bool > gone(vertex);
+            fill(gone.begin(), gone.end(), false);
+            cost[start] = 0;
+
+            for (int i = 0; i < vertex;++i) {
+                // find the minmum cost of unjudge node
+                int min = MAXN + 10;
+                int min_index = -1;
+                for (int j = 0; j < vertex; ++j) {
+                    if (cost[j] < min && !gone[j]) {
+                        min = cost[j];
+                        min_index = j;
+                    }
+                }
+                // mark visited
+                gone[min_index] = true;
+                // adjecent node of min
+                for (int j = 0; j < vertex; ++j) {
+                    if (graph[min_index][j] != MAXN &&
+                        !gone[j] &&
+                        min+graph[min_index][j] < cost[j]) {
+                        cost[j] = min + graph[min_index][j];
+                    }
+                }
+            }
+
+            // print 
+            cout << "from " << (char)(start+'A') << " to every node's cost is:\n";
+            for (int i = 0; i < vertex; ++i) {
+                if (i != start) {
+                    cout << (char)(start+'A') << "--> " << (char)(i+'A') << " is " << cost[i] << endl;
+                }
+            }
+        }
+        void bellman (int start) {
+            vector<int > pi(vertex);
+            fill(pi.begin(), pi.end(), -1);
+            vector<int > cost(vertex);
+            fill(cost.begin(), cost.end(), MAXN);
+            cost[start] = 0;
+
+            for (int i = 0; i < vertex-1; ++i) {
+                // for every node 
+                for (int n = 0; n < vertex; ++n) {
+                    // for its adjecent node
+                    for (int adjecent = 0; adjecent < vertex; ++adjecent) {
+                        if (graph[n][adjecent] != MAXN && 
+                            cost[n] + graph[n][adjecent] < cost[adjecent] ) {
+                            pi[adjecent] = n;
+                            cost[adjecent] = cost[n] + graph[n][adjecent];
+                        }
+                    }
+                }
+            }
+
+            // print
+            cout << "from " << (char)(start+'A') << " to every node's cost is:\n";
+            for (int i = 0; i < vertex; ++i) {
+                if (i != start) {
+                    cout << (char)(start+'A') << "--> " << (char)(i+'A') << " is " << cost[i] << endl;
+                }
+            }
+        }
+        void floyd (int source) {
+            int cost[vertex][vertex];
+            //copy map
+            for (int i = 0; i < vertex;++i) {
+                for(int j = 0; j < vertex; ++j) {
+                    cost[i][j] = graph[i][j];
+                }
+            }
+            for (int middle = 0; middle < vertex; ++middle) {
+                for (int start = 0; start < vertex; ++start) {
+                    for (int end = 0; end < vertex; ++end ) {
+                        if (cost[start][middle] + cost[middle][end] < cost[start][end] ) {
+                            cost[start][end] = cost[start][middle] + cost[middle][end] ;
+                        }
+                    }
+                }
+            }
+            // print
+            cout << "from " << (char)(source+'A') << " to every node's cost is:\n";
+            for (int i = 0; i < vertex; ++i) {
+                if (i != source) {
+                    cout << (char)(source+'A') << "--> " << (char)(i+'A') << " is " << cost[source][i] << endl;
+                }
+            }
+        }
 
 };
 
@@ -254,7 +353,14 @@ int main ()
     //t.dfs();
     //t.bfs();
     //t.spanning_tree(PRIM); 
-    t.spanning_tree(KRUSAL); 
+    //t.spanning_tree(KRUSAL); 
+    
+    cout << "dijkstra \n";
+    t.single_source_shortest_path(DIJKSTRA, 0);
+    cout << "bellman \n";
+    t.single_source_shortest_path(BELLMAN, 0);
+    cout << "floyd \n";
+    t.single_source_shortest_path(FLOYD, 0);
     
 
     return 0;

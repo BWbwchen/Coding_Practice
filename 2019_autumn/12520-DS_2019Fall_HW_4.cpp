@@ -367,7 +367,8 @@ class Graph {
                 }
             }
 */
-            cout << cost[end] << endl;
+            if (cost[end] != MAXN) cout << cost[end] << endl;
+            else cout << "Error" << endl;
         }
         void bellman (int start, int end) {
             vector<int > pi(vertex);
@@ -444,7 +445,7 @@ class Graph {
             fill(cost.begin(), cost.end(), -1);
             vector<bool > gone(vertex);
             fill(gone.begin(), gone.end(), false);
-            cost[start] = 0;
+            cost[start] = 1;
 
             for (int i = 0; i < vertex;++i) {
                 // find the max rate of unjudge node
@@ -467,7 +468,8 @@ class Graph {
                     }
                 }
             }
-            cout << (int )(((double)num)*cost[end]) << endl;
+            if (cost[end] == -1) cout << 0 << endl;
+            else cout << (int)(num*cost[end]) << endl;
         }
 
 };
@@ -485,7 +487,8 @@ int main ()
 
     while (cin >> cmd) {
         if (cmd == "Add") {
-            int v1, v2, cost, rate;
+            int v1, v2, cost;
+            double rate;
             cin >> v1 >> v2 >> cost >> rate;
             t.add(v1, v2, cost, rate);
         }

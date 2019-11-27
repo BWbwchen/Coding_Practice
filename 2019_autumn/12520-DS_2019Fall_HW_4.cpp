@@ -439,13 +439,14 @@ class Graph {
             }
             cout << "No\n";
         }
-        void exchange(int start, int end, int num) {
+        void exchange(int start, int end, int num, int mode, int limit=-1) {
             // dijkstra
             vector<double > cost(vertex);
             fill(cost.begin(), cost.end(), -1);
             vector<bool > gone(vertex);
             fill(gone.begin(), gone.end(), false);
             cost[start] = 1;
+            int mode_2_ans = 0;
 
             for (int i = 0; i < vertex;++i) {
                 // find the max rate of unjudge node
@@ -467,9 +468,20 @@ class Graph {
                         cost[j] = max*graph_rate[max_index][j];
                     }
                 }
+                if (mode == 2) {
+                    if ((int)(num*cost[end]) <= limit) 
+                        mode_2_ans = (int)(num*cost[end]);
+                    else mode_2_ans = mode_2_ans;
+                }
             }
-            if (cost[end] == -1) cout << 0 << endl;
-            else cout << (int)(num*cost[end]) << endl;
+            if (mode == 1) {
+                if (cost[end] == -1) cout << 0 << endl;
+                else cout << (int)(num*cost[end]) << endl;
+            }
+            else {
+                if (mode_2_ans == 0) cout << 0 << endl;
+                else cout << mode_2_ans << endl;
+            }
         }
 
 };
@@ -506,10 +518,12 @@ int main ()
         else if (cmd == "CreditExchange") {
             int start, end, num;
             cin >> start >> end >> num;
-            t.exchange(start, end, num);
+            t.exchange(start, end, num, 1);
         }
         else if (cmd == "CreditExchange2") {
-            //t.exchange2();
+            int start, end, num, limit;
+            cin >> start >> end >> num >> limit;
+            t.exchange(start, end, num, 2, limit);
         }
         else {
             // do nothing 

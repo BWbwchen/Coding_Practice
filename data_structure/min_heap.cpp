@@ -25,9 +25,11 @@ class minheap {
             int L = left(root);
             int R = right(root);
 
-            if (L < heap_size && arr[root]>arr[L])
+            // find the minmum number from 
+            // arr[root], arr[L], arr[R]
+            if (L < heap_size && arr[L] < arr[smallest]) 
                 smallest = L;
-            if (R < heap_size && arr[root]>arr[R])
+            if (R < heap_size && arr[R] < arr[smallest])
                 smallest = R;
 
             // check if need to heapify

@@ -66,7 +66,6 @@ class minheap {
         void delete_index (int index) {
             if (index >= heap_size) return ;
             // delete that node
-            arr[index] = 0;
             // let the last node be there
             arr[index] = arr[heap_size-1];
             heap_size--;

@@ -96,7 +96,6 @@ class Heap {
             heapify(0);
         }
         int get_root() {return arr[0];};
-
 };
 
 class Sort {
@@ -150,6 +149,28 @@ class Sort {
                 merge(front, mid, end);
             }
         }
+
+        // sort by num/nul %10
+        void countingsort(int mul) {
+            // counting
+            vector<int > counting(10, 0);
+            for (int i = 0; i < _unsort.size(); ++i) {
+                counting[(_sort[i]/mul)%10]++;
+            }
+
+            // accumulate so assign sort array will more easier
+            for (int i = 1; i < counting.size(); ++i) 
+                counting[i] += counting[i-1];
+
+            vector<int > temp_ans(_sort.size(), 0);
+            // NOTICE HERE
+            for (int i = _unsort.size() - 1; i >= 0; --i) {
+                temp_ans[counting[(_sort[i]/mul)%10]-1] = _sort[i];
+                counting[(_sort[i]/mul)%10]--;
+            }
+
+            _sort = temp_ans;
+        }
     public :
         Sort() {};
         void build() {
@@ -164,7 +185,8 @@ class Sort {
             }
         }
         void show () {
-            for (auto a : _sort) cout << a << endl;
+            for (auto a : _sort) cout << a << " ";
+            cout << endl;
         }
         // O(n^2)
         void insertion_sort() {
@@ -206,7 +228,43 @@ class Sort {
             // print solution
             show();
         }
+        void counting_sort() {
+            // find min max
+            int min = MAXN, max = -MAXN;
+            for (int i = 0; i < _unsort.size(); ++i) {
+                if (_unsort[i] < min) min = _unsort[i];
+                if (_unsort[i] > max) max = _unsort[i];
+            } 
+            // counting
+            vector<int > counting(max-min+1);
+            fill(counting.begin(), counting.end(), 0);
+            for (int i = 0; i < _unsort.size(); ++i) {
+                counting[_unsort[i]-min]++;
+            }
+            // print the answer !
+            for (int i = 0; i < counting.size(); ++i) {
+                for (int j = 1; j <= counting[i]; ++j) {
+                    cout << min+i << " ";
+                }
+            }
+            cout << endl;
+        }
+        void radix_sort () {
+            _sort = _unsort;
+            // find the max
+            int max = -MAXN;
+            for (int i = 0; i < _unsort.size(); ++i) {
+                if (_unsort[i] > max) max = _unsort[i];
+            }
             
+            int mul = 1;
+            while (max) {
+                countingsort(mul);
+                mul *= 10;
+                max /= 10;
+            }
+            show();
+        }
 };
 
 int main () 
@@ -217,13 +275,27 @@ int main ()
 
     Sort t;
     t.build();
-    //t.show();
-    //t.insertion_sort();
-    //t.quick_sort();
-    //t.merge_sort();
+    cout << "unsort\n";
+    t.show();
+    cout << "insertion  sort\n";
+    t.insertion_sort();
+    cout << "quick  sort\n";
+    t.quick_sort();
+    cout << "merge  sort\n";
+    t.merge_sort();
+    cout << "heap  sort\n";
     t.heap_sort();
+    cout << "counting  sort\n";
+    t.counting_sort();
+    cout << "radix  sort\n";
+    t.radix_sort();
     
 
     return 0;
 }
 
+/*
+testcase
+27
+11 10 9 8 7 6 5 4 3 2 1 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+*/

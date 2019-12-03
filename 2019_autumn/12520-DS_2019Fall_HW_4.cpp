@@ -1,4 +1,5 @@
 #define DEBUG
+#define LLMAXN 9223372036854775800
 #define MAXN 1e9
 #include <bits/stdc++.h>
 #define OK 1
@@ -18,24 +19,28 @@ class edge {
     double _rate;
     int start;  // start
     int end;    // end
+    bool valid;
 
     edge(int w, int s, int e) {
         weight = w;
         _rate = -MAXN;
         start = s;
         end = e;
+        valid = true;
     }
     edge(double r, int s, int e) {
         weight = MAXN;
         _rate = r;
         start = s;
         end = e;
+        valid = true;
     }
     edge() {
         weight = MAXN;
         _rate = -MAXN;
         start = -1;
         end = -1;
+        valid = true;
     }
     bool operator<(const edge& rhs) { return this->weight < rhs.weight; }
 };
@@ -51,7 +56,7 @@ class Graph {
     void _dfs(int start, int gone[]) {
         gone[start] = 1;
         for (int i = 0; i < adjlist[start].size(); ++i) {
-            if (!gone[adjlist[start][i].end]) {
+            if (adjlist[start][i].valid && !gone[adjlist[start][i].end]) {
                 _dfs(adjlist[start][i].end, gone);
             }
         }
@@ -72,18 +77,18 @@ class Graph {
             adjlist_rate.push_back(a);
         }
     }
-    void add(int v1, int v2, int cost, double rate = -100, int mode = NO) {
+    void add(int v1, int v2, int cost, double rate = -100) {
+        if (v1 == v2) return;
         adjlist[v1].push_back(edge(cost, v1, v2));
         adjlist[v2].push_back(edge(cost, v2, v1));
 
-        if (mode == OK) {
-            adjlist_rate[v1].push_back(edge(rate, v1, v2));
-            adjlist_rate[v2].push_back(edge(rate, v2, v1));
-        }
+        adjlist_rate[v1].push_back(edge(rate, v1, v2));
+        adjlist_rate[v2].push_back(edge(rate, v2, v1));
 
         all_edge.push_back(edge(cost, v1, v2));
     }
-    void remove(int v1, int v2, int mode = NO) {
+    void remove(int v1, int v2) {
+        if (v1 == v2) return;
         for (int i = 0; i < adjlist[v1].size(); ++i) {
             if (adjlist[v1][i].end == v2) {
                 adjlist[v1].erase(adjlist[v1].begin() + i);
@@ -97,7 +102,6 @@ class Graph {
             }
         }
         // rate
-        if (mode == NO) return;
         for (int i = 0; i < adjlist_rate[v1].size(); ++i) {
             if (adjlist_rate[v1][i].end == v2) {
                 adjlist_rate[v1].erase(adjlist_rate[v1].begin() + i);
@@ -161,56 +165,95 @@ class Graph {
     }
 
     void important() {
-        for (int i = 0; i < all_edge.size(); ++i) {
-            auto record = all_edge[i];
+        vector<edge> temp = all_edge;
+        for (int i = 0; i < temp.size(); ++i) {
+            auto record = temp[i];
             // remove edge from adjlist
-            remove(record.start, record.end, NO);
+            for (int j = 0; j < adjlist[record.start].size(); ++j) {
+                if (adjlist[record.start][j].end == record.end) {
+                    adjlist[record.start][j].valid = false;
+                    break;
+                }
+            }
+            for (int j = 0; j < adjlist[record.end].size(); ++j) {
+                if (adjlist[record.end][j].end == record.start) {
+                    adjlist[record.end][j].valid = false;
+                    break;
+                }
+            }
             if (!dfs()) {
                 cout << "Yes\n";
-                add(record.start, record.end, record.weight);
+                for (int j = 0; j < adjlist[record.start].size(); ++j) {
+                    if (adjlist[record.start][j].end == record.end) {
+                        adjlist[record.start][j].valid = true;
+                        break;
+                    }
+                }
+                for (int j = 0; j < adjlist[record.end].size(); ++j) {
+                    if (adjlist[record.end][j].end == record.start) {
+                        adjlist[record.end][j].valid = true;
+                        break;
+                    }
+                }
                 return;
             }
             // add edge
-            add(record.start, record.end, record.weight, NO);
+            for (int j = 0; j < adjlist[record.start].size(); ++j) {
+                if (adjlist[record.start][j].end == record.end) {
+                    adjlist[record.start][j].valid = true;
+                    break;
+                }
+            }
+            for (int j = 0; j < adjlist[record.end].size(); ++j) {
+                if (adjlist[record.end][j].end == record.start) {
+                    adjlist[record.end][j].valid = true;
+                    break;
+                }
+            }
         }
         cout << "No\n";
     }
     void dijkstra(int from, int dest) {
-        // check whether is conneted component
-        if (!dfs()) {
-            cout << "Error\n";
+        if (from == dest || dest >= vertex) {
+            cout << 0 << endl;
             return;
         }
         // initial
-        bool visited[vertex] = {0};
-        // first = key_value, second = index
-        priority_queue<pair<int, int>, vector<pair<int, int>>,
-                       greater<pair<int, int>>>
-            pq;
-        vector<int> key_value(vertex, MAXN);
+        vector<long long int> key_value(vertex, LLMAXN);
+        bool visited[vertex] = {false};
 
         key_value[from] = 0;
-        for (int i = 0; i < key_value.size(); ++i) pq.push({key_value[i], i});
-
-        visited[from] = 1;
+        visited[from] = true;
+        for (int i = 0; i < adjlist[from].size(); ++i)
+            key_value[adjlist[from][i].end] = adjlist[from][i].weight;
 
         for (int i = 0; i < vertex - 1; ++i) {
-            auto min = pq.top();
-            pq.pop();
+            // find the min key value node
+            long long int min = LLMAXN;
+            int min_id = from;
 
-            visited[min.second] = 1;
-            // update near node key_value
-            for (int j = 0; j < adjlist[min.second].size(); ++j) {
-                if (min.first + adjlist[min.second][j].weight <
-                    key_value[adjlist[min.second][j].end]) {
-                    key_value[adjlist[min.second][j].end] =
-                        min.first + adjlist[min.second][j].weight;
-                    pq.push({key_value[adjlist[min.second][j].end],
-                             adjlist[min.second][j].end});
+            for (int j = 0; j < vertex ; ++j) {
+                if (!visited[j] && key_value[j] < min) {
+                    min = key_value[j];
+                    min_id = j;
+                }
+            }
+
+            visited[min_id] = true;
+            // update the value adj the min_id
+            for (int j = 0; j < adjlist[min_id].size(); ++j) {
+                if (!visited[adjlist[min_id][j].end] &&
+                    min + adjlist[min_id][j].weight <
+                        key_value[adjlist[min_id][j].end]) {
+                    key_value[adjlist[min_id][j].end] =
+                        min + adjlist[min_id][j].weight;
                 }
             }
         }
-        cout << key_value[dest] << endl;
+        if (key_value[dest] == LLMAXN)
+            cout << "Error" << endl;
+        else
+            cout << key_value[dest] << endl;
     }
 
     void accumulate(double& ans, vector<pair<int, double>> predecessor,
@@ -219,7 +262,12 @@ class Graph {
         ans *= predecessor[target].second;
     }
 
-    void exchange(int from, int dest, int num, int mode, int limit = -1) {
+    void exchange(int from, int dest, long long int num, int mode,
+                  long long int limit = -1) {
+        if (from == dest) {
+            cout << num << endl;
+            return;
+        }
         // bellman
         vector<double> key_value(vertex, -MAXN);
         // predecessor, from here to its predecessor 's rate
@@ -246,7 +294,10 @@ class Graph {
         // from predecessor make the path
         double ans = 1;
         accumulate(ans, predecessor, dest);
-        cout << (int)(num*ans) << endl;
+        if (predecessor[dest].first == -1 || ans < 0)
+            cout << "0" << endl;
+        else
+            cout << (long long int)(num * ans) << endl;
     }
 };
 
@@ -265,11 +316,11 @@ int main() {
             int v1, v2, cost;
             double rate;
             cin >> v1 >> v2 >> cost >> rate;
-            t.add(v1, v2, cost, rate, OK);
+            t.add(v1, v2, cost, rate);
         } else if (cmd == "Delete") {
             int v1, v2;
             cin >> v1 >> v2;
-            t.remove(v1, v2, OK);
+            t.remove(v1, v2);
         } else if (cmd == "Map") {
             t.prim();
         } else if (cmd == "ImportantBus") {
@@ -279,11 +330,13 @@ int main() {
             cin >> start >> end;
             t.dijkstra(start, end);
         } else if (cmd == "CreditExchange") {
-            int start, end, num;
+            int start, end;
+            long long int num;
             cin >> start >> end >> num;
             t.exchange(start, end, num, 1);
         } else if (cmd == "CreditExchange2") {
-            int start, end, num, limit;
+            int start, end;
+            long long int num, limit;
             cin >> start >> end >> num >> limit;
             t.exchange(start, end, num, 2, limit);
         } else {

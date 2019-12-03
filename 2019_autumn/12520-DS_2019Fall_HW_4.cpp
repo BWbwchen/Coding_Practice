@@ -79,6 +79,7 @@ class Graph {
     }
     void add(int v1, int v2, int cost, double rate = -100) {
         if (v1 == v2) return;
+        if (v1 >= vertex || v2 >= vertex) return;
         adjlist[v1].push_back(edge(cost, v1, v2));
         adjlist[v2].push_back(edge(cost, v2, v1));
 
@@ -89,6 +90,7 @@ class Graph {
     }
     void remove(int v1, int v2) {
         if (v1 == v2) return;
+        if (v1 >= vertex || v2 >= vertex) return;
         for (int i = 0; i < adjlist[v1].size(); ++i) {
             if (adjlist[v1][i].end == v2) {
                 adjlist[v1].erase(adjlist[v1].begin() + i);
@@ -116,6 +118,7 @@ class Graph {
         }
     }
     bool dfs() {
+        if (vertex == 0) return true;
         int gone[vertex] = {0};
         _dfs(0, gone);
 
@@ -126,6 +129,10 @@ class Graph {
     }
 
     void prim() {
+        if (vertex == 0) {
+            cout << "Error\n";
+            return ;
+        }
         // check whether is conneted component
         if (!dfs()) {
             cout << "Error\n";
@@ -214,7 +221,7 @@ class Graph {
         cout << "No\n";
     }
     void dijkstra(int from, int dest) {
-        if (from == dest || dest >= vertex) {
+        if (vertex == 0 || from == dest || dest >= vertex || from >= vertex) {
             cout << 0 << endl;
             return;
         }
@@ -264,7 +271,7 @@ class Graph {
 
     void exchange(int from, int dest, long long int num, int mode,
                   long long int limit = -1) {
-        if (from == dest) {
+        if (vertex == 0 || from == dest || from>= vertex || dest>=vertex) {
             cout << num << endl;
             return;
         }

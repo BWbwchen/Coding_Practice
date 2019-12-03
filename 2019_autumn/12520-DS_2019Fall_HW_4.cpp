@@ -129,7 +129,7 @@ class Graph {
         }
 
         // initial
-        int gone[vertex] = {0};
+        bool gone[vertex] = {false};
         auto cmp = [](edge a, edge b) { return a.weight > b.weight; };
         priority_queue<edge, vector<edge>, decltype(cmp)> pq(cmp);
         vector<int> predecessor(vertex, -1);
@@ -138,23 +138,24 @@ class Graph {
         gone[0] = 1;
         for (int i = 0; i < adjlist[0].size(); ++i) pq.push(adjlist[0][i]);
 
-        int last_man = -1;
         long long int ans = 0LL;
+        int total_num = 1;
         // prim
-        for (int i = 0; i < vertex - 1; ++i) {
+        while (total_num != vertex) {
             // find the min key node to deal
             auto min = pq.top();
             pq.pop();
 
-            gone[min.end] = 1;
+            if (gone[min.end]) continue;
+            gone[min.end] = true;
             predecessor[min.end] = min.start;
-            last_man = min.end;
+            total_num++;
             // accumulate edge cost
             ans += min.weight;
             // push all the edge of min.end
-            for (int i = 0; i < adjlist[min.end].size(); ++i)
-                if (!gone[adjlist[min.end][i].end])
-                    pq.push(adjlist[min.end][i]);
+            for (int j = 0; j < adjlist[min.end].size(); ++j)
+                if (!gone[adjlist[min.end][j].end])
+                    pq.push(adjlist[min.end][j]);
         }
         cout << ans << endl;
     }

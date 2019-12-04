@@ -298,8 +298,123 @@ class Graph {
         }
         cout << key_value[dest] << endl;
     }
-    void exchange2(int from, int dest, long long int num, long long int limit) {
-        // bellman with edge valid
+    void dfs_rate(long long int& ans, int from, int dest, long long int num,
+                  long long int limit, bool visited[], vector<double> path) {
+        // mark visited
+        // if from == dest , calculate ans
+        // else :
+        // for every near edge
+        // if !visited
+        //      dfs()
+        //
+        // remove visited
+        visited[from] = true;
+        // calculate
+        long long int temp = num;
+        if (from == dest) {
+            if (path.size() > limit) {
+                visited[from] = false;
+                return;
+            }
+            vector<double>::iterator it;
+            // cout << "travel path\n";
+            for (it = path.begin(); it != path.end(); ++it) {
+                // cout << (*it) << " ";
+                temp *= (*it);
+            }
+            // cout << endl;
+            if (temp > ans) ans = temp;
+            visited[from] = false;
+            return;
+        }
+
+        for (auto road : adjlist_rate[from]) {
+            if (!visited[road.end]) {
+                path.push_back(road._rate);
+                dfs_rate(ans, road.end, dest, num, limit, visited, path);
+                path.pop_back();
+            }
+        }
+        visited[from] = false;
+    }
+
+    void loop_path(int from, int dest, long long int num, long long int limit,
+                   bool visited[], vector<double> path,
+                   vector<vector<double>>& to_ans, bool flag) {
+        // mark visited
+        // if from == dest , calculate ans
+        // else :
+        // for every near edge
+        // if !visited
+        //      dfs()
+        //
+        // remove visited
+        if (flag) visited[from] = true;
+        // calculate
+        long long int temp = num;
+        if (from == dest && path.size() != 0) {
+            to_ans.push_back(path);
+            visited[from] = false;
+            return;
+        }
+
+        for (auto road : adjlist_rate[from]) {
+            if (!visited[road.end]) {
+                path.push_back(road._rate);
+                loop_path(road.end, dest, num, limit, visited, path, to_ans,
+                          true);
+                path.pop_back();
+            }
+        }
+        visited[from] = false;
+    }
+
+    void exchange_two(int from, int dest, long long int num,
+                      long long int limit) {
+        // dfs ?
+        if (vertex == 0 || from >= vertex || dest >= vertex || limit == 0) {
+            cout << num << endl;
+            return;
+        }
+
+        long long int ans = -LLMAXN;
+        bool visited[vertex] = {false};
+        vector<double> path;
+
+        // what if loop ??
+        if (from == dest) {
+            vector<vector<double>> to_ans;
+            loop_path(from, dest, num, limit, visited, path, to_ans, false);
+            bool is_ok = false;
+            for (auto pre_ans : to_ans) {
+                if (pre_ans.size() > limit) continue;
+
+                is_ok = true;
+                // calculate answer
+                long long int temp = num;
+                vector<double>::iterator it;
+                // cout << "travel path\n";
+                for (it = pre_ans.begin(); it != pre_ans.end(); ++it) {
+                    // cout << (*it) << " ";
+                    temp *= (*it);
+                }
+                // cout << endl;
+                if (temp > ans) ans = temp;
+            }
+
+            if (!is_ok)
+                cout << num << endl;
+            else
+                cout << ans << endl;
+            return;
+        }
+
+        dfs_rate(ans, from, dest, num, limit, visited, path);
+        if (ans == -LLMAXN)
+            cout << 0 << endl;
+        else
+            cout << ans << endl;
+        // cout << "---------------------------------\n";
     }
 };
 
@@ -340,7 +455,7 @@ int main() {
             int start, end;
             long long int num, limit;
             cin >> start >> end >> num >> limit;
-            t.exchange2(start, end, num, limit);
+            t.exchange_two(start, end, num, limit);
         } else {
             // do nothing
         }

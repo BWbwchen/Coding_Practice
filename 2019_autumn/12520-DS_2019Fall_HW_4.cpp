@@ -4,12 +4,6 @@
 #include <bits/stdc++.h>
 #define OK 1
 #define NO 0
-#define PRIM 1
-#define KRUSAL 2
-#define DIJKSTRA 3
-#define BELLMAN 4
-#define FLOYD 5
-#define SOLLIN 6
 
 using namespace std;
 
@@ -77,7 +71,7 @@ class Graph {
             adjlist_rate.push_back(a);
         }
     }
-    void add(int v1, int v2, int cost, double rate = -100) {
+    void add(int v1, int v2, int cost, double rate) {
         if (v1 == v2) return;
         if (v1 >= vertex || v2 >= vertex) return;
         adjlist[v1].push_back(edge(cost, v1, v2));
@@ -131,7 +125,7 @@ class Graph {
     void prim() {
         if (vertex == 0) {
             cout << "Error\n";
-            return ;
+            return;
         }
         // check whether is conneted component
         if (!dfs()) {
@@ -239,7 +233,7 @@ class Graph {
             long long int min = LLMAXN;
             int min_id = from;
 
-            for (int j = 0; j < vertex ; ++j) {
+            for (int j = 0; j < vertex; ++j) {
                 if (!visited[j] && key_value[j] < min) {
                     min = key_value[j];
                     min_id = j;
@@ -263,48 +257,49 @@ class Graph {
             cout << key_value[dest] << endl;
     }
 
-    void accumulate(double& ans, vector<pair<int, double>> predecessor,
-                    int target) {
-        if (predecessor[target].first == -1) return;
-        ans *= predecessor[target].second;
-    }
-
-    void exchange(int from, int dest, long long int num, int mode,
-                  long long int limit = -1) {
-        if (vertex == 0 || from == dest || from>= vertex || dest>=vertex) {
+    void exchange(int from, int dest, long long int num) {
+        if (vertex == 0 || from == dest || from >= vertex || dest >= vertex) {
             cout << num << endl;
             return;
         }
-        // bellman
-        vector<double> key_value(vertex, -MAXN);
-        // predecessor, from here to its predecessor 's rate
-        vector<pair<int, double>> predecessor(vertex, make_pair(-1, -MAXN));
-        key_value[from] = 1;
+        // dijkstra
+        // initial
+        vector<long long int> key_value(vertex, -MAXN);
+        bool visited[vertex] = {false};
+
+        key_value[from] = num;
+        visited[from] = true;
+        for (int i = 0; i < adjlist_rate[from].size(); ++i)
+            key_value[adjlist_rate[from][i].end] =
+                num * adjlist_rate[from][i]._rate;
 
         for (int i = 0; i < vertex - 1; ++i) {
-            // for every node
+            // find the min key value node
+            double max_rate = 0;
+            int max_id = from;
+
             for (int j = 0; j < vertex; ++j) {
-                // it's near node
-                for (int near = 0; near < adjlist_rate[j].size(); ++near) {
-                    // update the key_value
-                    auto near_node = adjlist_rate[j][near];
-                    if (key_value[near_node.start] * near_node._rate >
-                        key_value[near_node.end]) {
-                        key_value[near_node.end] =
-                            key_value[near_node.start] * near_node._rate;
-                        predecessor[near_node.end] = make_pair(
-                            near_node.start, key_value[near_node.end]);
-                    }
+                if (!visited[j] && (key_value[j] > max_rate)) {
+                    max_rate = key_value[j];
+                    max_id = j;
+                }
+            }
+
+            visited[max_id] = true;
+            // update the value adj the max_id
+            for (auto near_edge : adjlist_rate[max_id]) {
+                if (!visited[near_edge.end] &&
+                    key_value[near_edge.start] * near_edge._rate >
+                        key_value[near_edge.end]) {
+                    key_value[near_edge.end] =
+                        key_value[near_edge.start] * near_edge._rate;
                 }
             }
         }
-        // from predecessor make the path
-        double ans = 1;
-        accumulate(ans, predecessor, dest);
-        if (predecessor[dest].first == -1 || ans < 0)
-            cout << "0" << endl;
-        else
-            cout << (long long int)(num * ans) << endl;
+        cout << key_value[dest] << endl;
+    }
+    void exchange2(int from, int dest, long long int num, long long int limit) {
+        // bellman with edge valid
     }
 };
 
@@ -340,12 +335,12 @@ int main() {
             int start, end;
             long long int num;
             cin >> start >> end >> num;
-            t.exchange(start, end, num, 1);
+            t.exchange(start, end, num);
         } else if (cmd == "CreditExchange2") {
             int start, end;
             long long int num, limit;
             cin >> start >> end >> num >> limit;
-            t.exchange(start, end, num, 2, limit);
+            t.exchange2(start, end, num, limit);
         } else {
             // do nothing
         }

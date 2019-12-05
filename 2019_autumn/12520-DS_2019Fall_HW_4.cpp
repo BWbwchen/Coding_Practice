@@ -338,83 +338,87 @@ class Graph {
         visited[from] = false;
     }
 
-    void loop_path(int from, int dest, long long int num, long long int limit,
-                   bool visited[], vector<double> path,
-                   vector<vector<double>>& to_ans, bool flag) {
-        // mark visited
-        // if from == dest , calculate ans
-        // else :
-        // for every near edge
-        // if !visited
-        //      dfs()
-        //
-        // remove visited
-        if (flag) visited[from] = true;
-        // calculate
-        long long int temp = num;
-        if (from == dest && path.size() != 0) {
-            to_ans.push_back(path);
-            visited[from] = false;
-            return;
-        }
-
-        for (auto road : adjlist_rate[from]) {
-            if (!visited[road.end]) {
-                path.push_back(road._rate);
-                loop_path(road.end, dest, num, limit, visited, path, to_ans,
-                          true);
-                path.pop_back();
-            }
-        }
-        visited[from] = false;
-    }
-
     void exchange_two(int from, int dest, long long int num,
-                      long long int limit) {
-        // dfs ?
-        if (vertex == 0 || from >= vertex || dest >= vertex || limit == 0) {
-            cout << num << endl;
-            return;
-        }
+                      long long int limit_time) {
+        /*
+         1. from this point , extend all possible
+         2. for all possible
+                if good => push all path list into answer
+                if not good => push path into to judge queue
+         */
+        /*
+         node can visited 2+ times
+         */
+        vector<list<int>> answer;
+        queue<list<int>> to_judge_path;
+        queue<set<pair<int, int>>> visited;
 
-        long long int ans = -LLMAXN;
-        bool visited[vertex] = {false};
-        vector<double> path;
+        list<int> initial;
+        initial.push_back(from);
+        set<pair<int, int>> initial_set;
+        to_judge_path.push(initial);
+        visited.push(initial_set);
 
-        // what if loop ??
-        if (from == dest) {
-            vector<vector<double>> to_ans;
-            loop_path(from, dest, num, limit, visited, path, to_ans, false);
-            bool is_ok = false;
-            for (auto pre_ans : to_ans) {
-                if (pre_ans.size() > limit) continue;
+        while (!to_judge_path.empty()) {
+            bool have_new_path = false;
+            auto this_path = to_judge_path.front();
+            to_judge_path.pop();
 
-                is_ok = true;
-                // calculate answer
-                long long int temp = num;
-                vector<double>::iterator it;
-                // cout << "travel path\n";
-                for (it = pre_ans.begin(); it != pre_ans.end(); ++it) {
-                    // cout << (*it) << " ";
-                    temp *= (*it);
-                }
-                // cout << endl;
-                if (temp > ans) ans = temp;
+            auto gone = visited.front();
+            visited.pop();
+
+            if (this_path.size() > limit_time) {
+                answer.push_back(this_path);
+                continue;
             }
 
-            if (!is_ok)
-                cout << num << endl;
-            else
-                cout << ans << endl;
-            return;
+            // extend all possible
+            auto extended_node = this_path.back();
+            for (auto possible : adjlist_rate[extended_node]) {
+                // not visited
+                if (gone.count(make_pair(possible.start, possible.end)) == 0 &&
+                    gone.count(make_pair(possible.end, possible.start)) == 0) {
+                    // update queue and visited
+                    have_new_path = true;
+                    list<int> old_path = this_path;
+                    old_path.push_back(possible.end);
+
+                    set<pair<int, int>> old_visited = gone;
+                    old_visited.insert(make_pair(extended_node, possible.end));
+
+                    to_judge_path.push(old_path);
+                    visited.push(old_visited);
+                }
+            }
+            if (!have_new_path) answer.push_back(this_path);
         }
 
-        dfs_rate(ans, from, dest, num, limit, visited, path);
-        if (ans == -LLMAXN)
-            cout << 0 << endl;
-        else
-            cout << ans << endl;
-        // cout << "---------------------------------\n";
+        vector<long long int> key_value(vertex, 0);
+        key_value[from] = num;
+
+        // base on the answer path calculate the correspond path
+        for (auto ans_list : answer) {
+            vector<long long int> temp(vertex, 0);
+            temp[from] = num;
+            int pre = from;
+            for (auto node : ans_list) {
+                if (node == pre) continue;
+
+                // find the rate
+                for (auto maybe : adjlist_rate[pre]) {
+                    if (maybe.end == node) {
+                        temp[node] = maybe._rate * temp[pre];
+                        break;
+                    }
+                }
+
+                if (temp[node] > key_value[node]) {
+                    key_value[node] = temp[node];
+                }
+                pre = node;
+            }
+        }
+        cout << key_value[dest] << endl;
     }
 };
 

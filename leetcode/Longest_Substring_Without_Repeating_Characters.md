@@ -1,7 +1,7 @@
 # Longest Substring Without Repeating Characters
 
 ## brute force
-```cpp=
+```c++
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {
@@ -24,7 +24,7 @@ public:
 ```
 
 ## sliding window
-```cpp=
+```c++
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {
@@ -48,7 +48,7 @@ public:
 ```
 
 ## sliding window and remove more duplicate step
-```cpp=
+```c++
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {

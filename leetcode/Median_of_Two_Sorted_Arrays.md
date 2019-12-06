@@ -3,7 +3,7 @@
 ## straight method
 merge two sorted array , got answer array
 calculate median
-```cpp=
+```c++
 class Solution {
 public:
     // brute force 

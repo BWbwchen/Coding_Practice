@@ -33,7 +33,7 @@ class Problem {
         sequence = temp_ans;
         cout << sequence.front() << " " << sequence.back() << endl;
     }
-    int merge(int front, int mid, int end) {
+    long long int merge(int front, int mid, int end) {
         // need to consider only one
         vector<int> left(m_temp.begin() + front, m_temp.begin() + mid + 1),
             right(m_temp.begin() + mid + 1, m_temp.begin() + end + 1);
@@ -41,19 +41,19 @@ class Problem {
         right.insert(right.end(), MAXN);
 
         int Lindex = 0, Rindex = 0;
-        int to_return = 0;
+        long long int to_return = 0;
         for (int i = front; i <= end; ++i) {
             if (left[Lindex] > right[Rindex]) {
                 m_temp[i] = right[Rindex++];
-                to_return += ((mid - front + 1) - Lindex);
+                to_return += (long long int)((mid - front + 1) - Lindex);
             } else {
                 m_temp[i] = left[Lindex++];
             }
         }
         return to_return;
     }
-    int mergesort(int front, int end) {
-        int ans = 0;
+    long long int mergesort(int front, int end) {
+        long long int ans = 0;
         if (front < end) {
             int mid = (front + end) / 2;
             ans += mergesort(front, mid);
@@ -79,9 +79,7 @@ class Problem {
         }
         m_temp = sequence;
     }
-    void merge_sort() {
-        cout << mergesort(0, length - 1) << endl;
-    }
+    void merge_sort() { cout << mergesort(0, length - 1) << endl; }
     void radix_sort() {
         // find the max
         int max = -MAXN;

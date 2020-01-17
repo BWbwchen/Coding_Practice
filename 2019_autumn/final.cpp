@@ -20,6 +20,7 @@ class solution {
                 map[i][j] = false;
             }
         }
+        //for (INDEX i = 0; i < vertex; ++i) map[i][i] = true;
     }
     void input() {
         INDEX a, b;
@@ -33,32 +34,37 @@ class solution {
         for (INDEX i = 0; i < vertex; ++i) {
             p.insert(i);
         }
-        cout << "l;aksdjfal;skdfjldkfjas;ldkfjasl;kdfj;aslkdjf" << endl;
         clique(a, p, x);
     }
-    set<INDEX> new_set(set<INDEX> s, set<INDEX> ans, INDEX v) {
+    set<INDEX> ans_set(set<INDEX> s, set<INDEX> ans, INDEX v) {
         set<INDEX> newset = s;
         // check if it conneted to all node in answer set
         for (set<INDEX>::iterator it = ans.begin(); it != ans.end(); ++it) {
-            if (!map[v][*it] && !map[*it][v]) return newset;
+            if (!map[v][*it]) return s;
         }
         newset.insert(v);
         return newset;
     }
     void clique(set<INDEX> a, set<INDEX> p, set<INDEX> x) {
-        if (p.size() == 0) {
-            cout << "this is a clique" << endl;
+        if (p.size() == 0 ) {
             for (set<INDEX>::iterator it = a.begin(); it != a.end(); ++it) {
-                cout << *it << endl;
+                cout << *it << " ";
             }
+            cout << endl;
+            return;
         }
         for (INDEX i = 0; i < vertex; ++i) {
-            if (p.find(i) != p.end()) {
+            if (p.find(i) != p.end() && x.find(i) == x.end()) {
+                set<INDEX> new_a = ans_set(a, a, i);
                 set<INDEX> new_p = p;
+                set<INDEX> new_x = ans_set(x, a, i);
+
                 new_p.erase(i);
-                clique(new_set(a, a, i), new_p, new_set(x, a, i));
-                p.erase(i);
-                x.insert(i);
+
+                clique(new_a, new_p, new_x);
+                //p.erase(i);
+                //x.insert(i);
+                if (new_a.find(i) != new_a.end()) x.insert(i); 
             }
         }
     }

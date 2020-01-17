@@ -4,7 +4,7 @@
 
 using namespace std;
 
-unsigned long int vertex = 8;
+unsigned long int vertex = 15;
 class solution {
    private:
     bool **map;
@@ -88,7 +88,7 @@ class solution {
                 if (map[i][j]) {
                     if (degree[j].first > degree[i].first) {
                         degree[j].first--;
-                        sort(degree.begin()+j, degree.end());
+                        sort(degree.begin()+i+1, degree.end());
                     }
                 }
             }

@@ -139,11 +139,7 @@ int main(int argc, char **argv) {
     double time = ((double)(clock() - start2));
     t.clique_ans();
     cout << "Time (precise) = " << time / CLOCKS_PER_SEC << endl;
-    /*
     t.k_core();
-    cout << "Time (precise) = " << ((double)(clock() - start2)) / CLOCKS_PER_SEC
-         << endl;
-    */
 
     return 0;
 }

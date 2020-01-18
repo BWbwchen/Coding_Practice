@@ -4,10 +4,12 @@
 
 using namespace std;
 
-unsigned long int vertex = 15;
+unsigned long int vertex = 500;
+//unsigned long int vertex = 5;
 class solution {
    private:
     bool **map;
+    INDEX kcore;
 
     set<INDEX> ans_set(set<INDEX> s, INDEX v) {
         // return s and neibor(v) 
@@ -54,20 +56,39 @@ class solution {
     void input() {
         INDEX a, b;
         while (cin >> a >> b) {
+            if (b == -100) {
+                kcore = a;
+                break;
+            }
             map[a][b] = true;
             map[b][a] = true;
         }
+        /*
+        cout << "this is map \n";
+        for (INDEX i = 0; i < vertex; ++i) {
+            for (INDEX j = 0; j < vertex; ++j) {
+                cout << map[i][j] << " ";
+            }
+            cout << endl;
+        }
+        */
     }
     void clique_starter() {
-        //freopen("clique.txt", "w", stdout);
+        freopen("clique.txt", "w", stdout);
         set<INDEX> a, p, x;
         for (INDEX i = 0; i < vertex; ++i) {
             p.insert(i);
         }
         clique(a, p, x);
     }
+    void debug (vector<pair<INDEX, INDEX>> a) {
+        cout << "---------------debug-------------" << endl;
+        for (INDEX i = 0; i < a.size(); ++i) {
+            cout << "core number is " << a[i].second << " core is " << a[i].first << endl;
+        }
+    }
     void k_core () {
-        //freopen("k_core.txt", "w", stdout);
+        freopen("k_core.txt", "w", stdout);
         vector<INDEX> core(vertex, 0);
         // computer the degrees of vertices
         // {degree, index}
@@ -83,12 +104,16 @@ class solution {
         sort(degree.begin(), degree.end());
 
         for (INDEX i = 0; i < vertex; ++i) {
+            //cout << "core " << degree[i].second << " is " << degree[i].first << endl;
             core[degree[i].second] = degree[i].first;
             for (INDEX j = 0; j < vertex; ++j) {
-                if (map[i][j]) {
+                //printf("map[%d][%d] is : %d\n", degree[i].second, j, map[degree[i].second][j]);
+                // adjcent
+                if (map[degree[i].second][degree[j].second]) {
                     if (degree[j].first > degree[i].first) {
                         degree[j].first--;
                         sort(degree.begin()+i+1, degree.end());
+                        //debug(degree);
                     }
                 }
             }
@@ -96,14 +121,15 @@ class solution {
 
         // print the answer
         for (INDEX i = 0; i < vertex; ++i) {
-            cout << i << " " << core[i] << endl;
+            if (core[i] >= kcore) cout << i << " " << core[i] << endl;
         }
     }
 };
 
 int main(int argc, char **argv) {
 #ifdef DEBUG
-    freopen("in.in", "r", stdin);
+    //freopen("in.in", "r", stdin);
+    freopen("sample_input.txt", "r", stdin);
 #endif
     solution t;
     t.input();

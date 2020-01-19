@@ -7,15 +7,20 @@
 using namespace std;
 
 unsigned long int vertex = 500;
-// unsigned long int vertex = 5;
+unsigned long int vertex = 5;
 class solution {
    private:
-    bool** map;
+    INDEX level;
+    unsigned long long int pk;
+    float TimeLimit;
+    bool **map;
     INDEX kcore;
     // TYPE<INDEX> max_clique;
     vector<INDEX> max_clique;
     vector<INDEX> q_clique;
     vector<vector<INDEX>> C;
+    vector<INDEX> num_edges;
+    vector<INDEX> adj;
     Vertex S;
 
     TYPE<INDEX> ans_set(TYPE<INDEX> s, INDEX v) {
@@ -52,7 +57,7 @@ class solution {
             }
         }
     */
-    void ColorSort(Vertex& r) {
+    void ColorSort(Vertex &r) {
         int j = 0;
         int maxno = 1;
         int min_k = max_clique.size() - q_clique.size() + 1;
@@ -100,17 +105,36 @@ class solution {
         }
         return to_return;
     }
+    void my_sort(Vertex &a) {
+        sort(a.begin(), a.end(), [](const auto &lhs, const auto &rhs) {
+            return lhs.second > rhs.second;
+        });
+    }
+    void init_color(Vertex &r) {
+        const int max_degree = r[0].second;
+        for (int i = 0; i < max_degree; i++) r[i].second = i + 1;
+        for (int i = max_degree; i < vertex; i++) r[i].second = max_degree + 1;
+    }
     // R
     // {index, degree?or color }
     void clique(Vertex R) {
+        S[level].first = S[level].first + S[level - 1].first - S[level].second;
+        S[level].second = S[level - 1].first;
         while (R.size()) {
             if (q_clique.size() + R.back().second > max_clique.size()) {
                 q_clique.push_back(R.back().first);
                 Vertex Rp;
                 Rp = and_set(R, R.back().first);
                 if (Rp.size()) {
+                    if ((float)S[level].first / ++pk < TimeLimit) {
+                        // sort degree
+                        my_sort(Rp);
+                    }
                     ColorSort(Rp);
+                    S[level].first++;
+                    level++;
                     clique(Rp);
+                    level--;
                 } else if (q_clique.size() > max_clique.size()) {
                     max_clique = q_clique;
                 }
@@ -124,7 +148,7 @@ class solution {
 
    public:
     solution() {
-        map = new bool*[vertex];
+        map = new bool *[vertex];
         for (INDEX i = 0; i < vertex; ++i) {
             map[i] = new bool[vertex];
         }
@@ -136,7 +160,9 @@ class solution {
         for (INDEX i = 0; i <= vertex; ++i) {
             C.push_back(vector<INDEX>(1));
         }
-        S.resize(vertex+1);
+        S.resize(vertex + 1);
+        TimeLimit = 0.025f;
+        num_edges.resize(vertex+1, 0);
     }
     void input() {
         INDEX a, b;
@@ -147,6 +173,8 @@ class solution {
             }
             map[a][b] = true;
             map[b][a] = true;
+            num_edges[a]++;
+            num_edges[b]++;
         }
     }
     void clique_starter() {
@@ -166,13 +194,15 @@ class solution {
             }
         }
         // sort it !!
-        sort(r.begin(), r.end(), [](const auto& lhs, const auto& rhs) {
-            return lhs.second > rhs.second;
-        });
+        my_sort(r);
 
-        const int max_degree = r[0].second;
-        for (int i = 0; i < max_degree; i++) r[i].second = i + 1;
-        for (int i = max_degree; i < vertex; i++) r[i].second = max_degree + 1;
+        init_color(r);
+
+        for (int i = 0; i < r.size() + 1; i++) {
+            S[i].first = 0;
+            S[i].second = 0;
+        }
+        level = 1;
 
         clique(r);
     }
@@ -191,42 +221,155 @@ class solution {
                  << a[i].first << endl;
         }
     }
-    void k_core() {
-        //        freopen("k_core.txt", "w", stdout);
-        vector<INDEX> core(vertex, 0);
-        // computer the degrees of vertices
-        // {degree, index}
-        vector<pair<INDEX, INDEX>> degree(vertex, {0, 0});
-        for (INDEX i = 0; i < vertex; ++i) {
-            degree[i].second = i;
-            for (INDEX j = 0; j < vertex; ++j) {
-                if (map[i][j]) degree[i].first++;
+    /*
+        void k_core() {
+            //        freopen("k_core.txt", "w", stdout);
+            vector<INDEX> core(vertex, 0);
+            // computer the degrees of vertices
+            // {degree, index}
+            vector<pair<INDEX, INDEX>> degree(vertex, {0, 0});
+            for (INDEX i = 0; i < vertex; ++i) {
+                degree[i].second = i;
+                for (INDEX j = 0; j < vertex; ++j) {
+                    if (map[i][j]) degree[i].first++;
+                }
+            }
+            // order the set increasing by degree
+            sort(degree.begin(), degree.end());
+
+            for (INDEX i = 0; i < vertex; ++i) {
+                core[degree[i].second] = degree[i].first;
+                for (INDEX j = 0; j < vertex; ++j) {
+                    // adjcent
+                    if (map[degree[i].second][degree[j].second]) {
+                        if (degree[j].first > degree[i].first) {
+                            degree[j].first--;
+                            sort(degree.begin() + i + 1, degree.end());
+                        }
+                    }
+                }
+            }
+
+            // print the answer
+            for (INDEX i = 0; i < vertex; ++i) {
+                if (core[i] >= kcore) cout << i << " " << core[i] << endl;
             }
         }
-        // order the set increasing by degree
-        sort(degree.begin(), degree.end());
+    */
+    void init_k() {
+        vector<INDEX> temp_num_edges(vertex + 1);
+        temp_num_edges[0] = 0;
+        int m = 0;
+        for (int i = 0; i < vertex; ++i) {
+            m += num_edges[i];
+            temp_num_edges[i + 1] = m;
+        }
+        adj.resize(m);
+        for (int i = 0; i < vertex+1; ++i) {
+            num_edges[i] = temp_num_edges[i];
+        }
 
-        for (INDEX i = 0; i < vertex; ++i) {
-            core[degree[i].second] = degree[i].first;
-            for (INDEX j = 0; j < vertex; ++j) {
-                // adjcent
-                if (map[degree[i].second][degree[j].second]) {
-                    if (degree[j].first > degree[i].first) {
-                        degree[j].first--;
-                        sort(degree.begin() + i + 1, degree.end());
-                    }
+
+        for (int i = 0; i < vertex; ++i) {
+            for (int j = i + 1; j < vertex; ++j) {
+                if (map[i][j]) {
+                    adj[temp_num_edges[i]++] = j;
+                    adj[temp_num_edges[j]++] = i;
                 }
             }
         }
 
-        // print the answer
-        for (INDEX i = 0; i < vertex; ++i) {
-            if (core[i] >= kcore) cout << i << " " << core[i] << endl;
+        for (int i = 0; i < vertex; ++i) {
+            cout << "NO " << i << " sort " << endl;
+            sort(adj.begin() + num_edges[i],
+                 adj.begin() + num_edges[i + 1],
+                 [](const auto &lhs, const auto &rhs) {
+                     return lhs > rhs;
+                 });
         }
+    }
+    void BZ_kCores() {
+        init_k();
+        vector<INDEX> core(vertex, 0);
+
+        // Two arrays of size n
+        vector<INDEX> vert(vertex, 0);
+        vector<INDEX> pos(vertex, 0);
+
+        // Maximum degree
+        int maxDeg = 0;
+
+        // deg[i] -- contains degree of vertex i
+        for (long i = 0; i < vertex; i++) {
+            core[i] = num_edges[i + 1] - num_edges[i];
+
+            if (core[i] > maxDeg) maxDeg = core[i];
+        }
+
+        // Used for bin-sort -- is of size maxDeg + 1
+        vector<INDEX> bin(maxDeg + 1);
+
+        // Sort the vertices by increasing degree using bin-sort
+        // Count number of vertices with each degree in 0...maxDeg
+        for (long i = 0; i < vertex; i++) bin[core[i]]++;
+
+        unsigned int start = 0;
+        for (int d = 0; d < maxDeg + 1; d++) {
+            unsigned int num = bin[d];
+            bin[d] = start;  // Start index of vertex in vert with degree d
+            start = start + num;
+        }
+
+        // Do bin-sort of the vertices
+        // vert -- contains the vertices in sorted order of degree
+        // pos -- contains the positon of a vertex in vert array
+        for (long i = 0; i < vertex; i++) {
+            pos[i] = bin[core[i]];
+            vert[pos[i]] = i;
+            bin[core[i]]++;
+        }
+
+        for (int d = maxDeg; d >= 1; d--) bin[d] = bin[d - 1];
+        bin[0] = 0;
+
+        // kcores computation
+        for (long i = 0; i < vertex; i++) {
+            // Process the vertices in increasing order of degree
+            INDEX v = vert[i];
+            for (INDEX j = num_edges[v]; j < num_edges[v + 1]; j++) {
+                // TODO;
+                INDEX u = adj[j];
+                if (core[u] > core[v]) {
+                    // Swap u with the first vertex in bin[du]
+                    unsigned int du = core[u];
+                    unsigned int pu = pos[u];
+                    unsigned int pw = bin[du];
+                    unsigned int w = vert[pw];
+
+                    if (u != w) {
+                        pos[u] = pw;
+                        vert[pu] = w;
+                        pos[w] = pu;
+                        vert[pw] = u;
+                    }
+
+                    // Increase the starting index of bin du
+                    bin[du]++;
+
+                    // Decrease degree of u -- so u is in previous bin now
+                    core[u]--;
+                }
+            }
+        }
+        cout << "done\n";
+
+        // print ans
+        vert.clear();
+        pos.clear();
     }
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 #ifdef DEBUG
     // freopen("in.in", "r", stdin);
     freopen("sample_input.txt", "r", stdin);
@@ -235,13 +378,13 @@ int main(int argc, char** argv) {
     solution t;
     t.input();
     clock_t start2 = clock();
+    /*
     t.clique_starter();
     double time = ((double)(clock() - start2));
     cout << "clique finish Time (precise) = " << time / CLOCKS_PER_SEC << endl;
     t.clique_ans();
-    /*
-    t.k_core();
     */
+    t.BZ_kCores();
     cout << "total finish Time (precise) = "
          << (double)(clock() - start2) / CLOCKS_PER_SEC << endl;
 

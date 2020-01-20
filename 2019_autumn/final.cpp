@@ -1,15 +1,16 @@
-#define DEBUG
 #define INDEX int
 #define TYPE set
 #define Vertex vector<pair<INDEX, INDEX>>
 #include <bits/stdc++.h>
 #include <unistd.h>
+
 #include <chrono>
 
 using namespace std;
 using namespace std::chrono;
 
-unsigned long int vertex = 500;
+unsigned long int vertex = 82168;
+// unsigned long int vertex = 500;
 // unsigned long int vertex = 5;
 class solution {
    private:
@@ -41,7 +42,7 @@ class solution {
                 maxno = k;
                 C[maxno + 1].clear();
             }
-            C[k].push_back(p);
+            C[k].emplace_back(p);
             if (k < min_k) {
                 r[j++].first = p;
             }
@@ -57,7 +58,6 @@ class solution {
         }
     }
     bool and_set_bool(vector<INDEX> r, INDEX p) {
-        vector<INDEX> to_return;
         for (INDEX i = 0; i < r.size(); ++i) {
             if (map[p][r[i]]) {
                 return true;
@@ -67,9 +67,10 @@ class solution {
     }
     Vertex and_set(Vertex r, INDEX p) {
         Vertex to_return;
+        to_return.reserve(r.size());
         for (INDEX i = 0; i < r.size(); ++i) {
             if (map[p][r[i].first]) {
-                to_return.push_back({r[i].first, r[i].second});
+                to_return.emplace_back(make_pair(r[i].first, r[i].second));
             }
         }
         return to_return;
@@ -85,13 +86,13 @@ class solution {
         for (int i = max_degree; i < vertex; i++) r[i].second = max_degree + 1;
     }
     // R
-    // {index, degree?or color }
+    // {index, degree}
     void clique(Vertex R) {
         S[level].first = S[level].first + S[level - 1].first - S[level].second;
         S[level].second = S[level - 1].first;
         while (R.size()) {
             if (q_clique.size() + R.back().second > max_clique.size()) {
-                q_clique.push_back(R.back().first);
+                q_clique.emplace_back(R.back().first);
                 Vertex Rp;
                 Rp = and_set(R, R.back().first);
                 if (Rp.size()) {
@@ -138,7 +139,7 @@ class solution {
 
         for (int i = 0; i < vertex; ++i) {
             sort(adj.begin() + num_edges[i], adj.begin() + num_edges[i + 1],
-                 [](const auto &lhs, const auto &rhs) { return lhs > rhs; });
+                 [](const int &lhs, const int &rhs) { return lhs > rhs; });
         }
     }
 
@@ -158,32 +159,35 @@ class solution {
                 map[i][j] = false;
             }
         }
-        for (INDEX i = 0; i <= vertex; ++i) {
-            C.push_back(vector<INDEX>(1));
-        }
+        C.resize(vertex+1, vector<INDEX>(1));
         S.resize(vertex + 1);
         num_edges.resize(vertex + 1, 0);
         core.resize(vertex, 0);
+        q_clique.reserve(2000);
+        max_clique.reserve(2000);
     }
     void input(char *file) {
         freopen(file, "r", stdin);
         INDEX a, b;
         INDEX max = -1;
         while (cin >> a >> b) {
-            if (max < a) max = a;
-            else if (max < b) max = b;
+            if (max < a)
+                max = a;
+            else if (max < b)
+                max = b;
 
             map[a][b] = true;
             map[b][a] = true;
             num_edges[a]++;
             num_edges[b]++;
         }
-        vertex = max;
+        vertex = max+1;
     }
     void clique_starter() {
         Vertex r;
+        r.resize(vertex, {0, 0});
         for (INDEX i = 0; i < vertex; ++i) {
-            r.push_back({i, 0});
+            r[i].first = i;
             for (INDEX j = 0; j < vertex; ++j) {
                 if (map[i][j]) r[i].second++;
             }
@@ -204,9 +208,8 @@ class solution {
     void clique_ans() {
         ofstream clique_stream("clique.txt");
         sort(max_clique.begin(), max_clique.end());
-        for (vector<INDEX>::iterator it = max_clique.begin();
-             it != max_clique.end(); ++it) {
-            clique_stream << *it << endl;
+        for (int i = 0; i < max_clique.size(); ++i) {
+            clique_stream << max_clique[i] << endl;
         }
         clique_stream.close();
     }
@@ -244,7 +247,7 @@ class solution {
         // Do bin-sort of the vertices
         // vert -- contains the vertices in sorted order of degree
         // pos -- contains the positon of a vertex in vert array
-        for (long i = 0; i < vertex; i++) {
+        for (int i = 0; i < vertex; i++) {
             pos[i] = bin[core[i]];
             vert[pos[i]] = i;
             bin[core[i]]++;
@@ -254,11 +257,10 @@ class solution {
         bin[0] = 0;
 
         // kcores computation
-        for (long i = 0; i < vertex; i++) {
+        for (int i = 0; i < vertex; i++) {
             // Process the vertices in increasing order of degree
             INDEX v = vert[i];
             for (INDEX j = num_edges[v]; j < num_edges[v + 1]; j++) {
-                // TODO;
                 INDEX u = adj[j];
                 if (core[u] > core[v]) {
                     // Swap u with the first vertex in bin[du]
@@ -284,12 +286,12 @@ class solution {
         }
 
         // print ans
-        vert.clear();
-        pos.clear();
+        vert.clear(); 
+        pos.clear(); 
     }
     void kcore_ans() {
         ofstream kcore_stream("kcore.txt");
-        for (int i = 0; i < vertex; ++i) {
+        for (int i = 0; i < core.size(); ++i) {
             if (core[i] >= kcore) kcore_stream << i << " " << core[i] << endl;
         }
         kcore_stream.close();
@@ -300,10 +302,8 @@ int main(int argc, char **argv) {
     //--------------input argument---------------//
     int opt;
     char *file_str;
-    int k_core = 0;
     if (argc != 3) {
-        fprintf(stderr,
-            "usage : ./clique_find (graph file) (k core number)\n");
+        fprintf(stderr, "usage : ./clique_find (graph file) (k core number)\n");
         exit(1);
     }
     /*
@@ -339,9 +339,9 @@ int main(int argc, char **argv) {
     auto end = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(end - start);
     cout << "time : " << duration.count() << endl;
-    //t.clique_starter();
-    //t.BZ_kCores();
-    
+    // t.clique_starter();
+    // t.BZ_kCores();
+
     start = high_resolution_clock::now();
     t.clique_ans();
     t.kcore_ans();

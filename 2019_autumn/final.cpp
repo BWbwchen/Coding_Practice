@@ -91,6 +91,7 @@ class solution {
         S[level].first = S[level].first + S[level - 1].first - S[level].second;
         S[level].second = S[level - 1].first;
         while (R.size()) {
+            auto start_in = high_resolution_clock::now();
             if (q_clique.size() + R.back().second > max_clique.size()) {
                 q_clique.emplace_back(R.back().first);
                 Vertex Rp;
@@ -159,7 +160,7 @@ class solution {
                 map[i][j] = false;
             }
         }
-        C.resize(vertex+1, vector<INDEX>(1));
+        C.resize(vertex + 1, vector<INDEX>(1));
         S.resize(vertex + 1);
         num_edges.resize(vertex + 1, 0);
         core.resize(vertex, 0);
@@ -181,7 +182,7 @@ class solution {
             num_edges[a]++;
             num_edges[b]++;
         }
-        vertex = max+1;
+        vertex = max + 1;
     }
     void clique_starter() {
         Vertex r;
@@ -286,11 +287,12 @@ class solution {
         }
 
         // print ans
-        vert.clear(); 
-        pos.clear(); 
+        vert.clear();
+        pos.clear();
     }
     void kcore_ans() {
         ofstream kcore_stream("kcore.txt");
+        sort(core.begin(), core.end());
         for (int i = 0; i < core.size(); ++i) {
             if (core[i] >= kcore) kcore_stream << i << " " << core[i] << endl;
         }
@@ -298,7 +300,13 @@ class solution {
     }
 };
 
+void signal_handler(int signum) {
+    cout << "Get signal " << signum << endl;
+    exit(signum);
+}
+
 int main(int argc, char **argv) {
+    signal(SIGINT, signal_handler);
     //--------------input argument---------------//
     int opt;
     char *file_str;
@@ -331,23 +339,24 @@ int main(int argc, char **argv) {
     t.input(argv[1]);
 
     //------------------thread-------------------//
-    auto start = high_resolution_clock::now();
+    //auto start = high_resolution_clock::now();
     thread t1(&solution::clique_starter, &t);
     thread t2(&solution::BZ_kCores, &t);
     t1.join();
     t2.join();
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(end - start);
-    cout << "time : " << duration.count() << endl;
+    //auto end = high_resolution_clock::now();
+    //auto duration = duration_cast<milliseconds>(end - start);
     // t.clique_starter();
     // t.BZ_kCores();
-
+    //cout << "Total time : " << duration.count() << endl;
+    /*
     start = high_resolution_clock::now();
-    t.clique_ans();
-    t.kcore_ans();
     end = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(end - start);
     cout << "IO time : " << duration.count() << endl;
+    */
+    t.clique_ans();
+    t.kcore_ans();
 
     return 0;
 }

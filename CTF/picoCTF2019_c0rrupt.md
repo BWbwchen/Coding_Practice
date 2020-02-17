@@ -47,9 +47,9 @@ an IEND chunck
 see [`this`](http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html)
 
 The length of the chunck is :
-length        | chunck type  | chunck data | CRC 
-:------------:|:------------:|:-----------:|:---:
-4 bytes    | 4 bytes |  length bytes | 4 bytes 
+length        | chunck type  | chunck data | CRC |
+:------------:|:------------:|:-----------:|:---:|
+4 bytes    | 4 bytes |  length bytes | 4 bytes |
 
 So modify `C"DR` to `IHDR` 
 ```

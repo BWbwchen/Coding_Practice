@@ -26,9 +26,11 @@ the cmp need to be equal.
 
 * run debug to see the register 
 
-::info
+# NOTICE
+```
 add rax, 0x4 ---> mean add 4 bytes !
-::
+```
+
 
 ```
 (gdb) x/8w $rax

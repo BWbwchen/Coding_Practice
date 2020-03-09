@@ -1,0 +1,73 @@
+html {
+    height: 100%;
+    font-size: 16px;
+    line-height: 1.5;
+}
+body {
+    height: 100%;
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background: #fff url("../images/bg.jpg") no-repeat fixed center bottom;
+    background-size: cover;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.header, .footer {
+    text-align: center; /* text center */
+    text-shadow: 0.2rem 0.2rem 0.2rem black; /* shadow */
+}
+
+.header h1 {
+    font-family: 'Griffy', cursive;
+    font-size: 3rem;
+    color : white;
+}
+
+.container {
+    width : 70%;
+    max-width: 40rem;
+
+    padding: 3rem;
+    padding-top: 1rem;
+
+    /* center */
+    margin-left: auto;
+    margin-right: auto;
+
+    border: 2rem solid white;
+    background-color: rgb(255, 255, 255, 0.87);
+}
+
+.post {
+    margin-bottom: 5rem;
+}
+
+.post:last-child {
+    margin-bottom: 0;
+}
+
+.post h2 {
+    /* title margin */
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.date {
+    color : rgb(32, 148, 255);
+    text-transform: uppercase;
+    font-weight : bold;
+    letter-spacing : 0.3rem;
+    margin: 1rem 0;
+}
+.quote {
+    padding-left: 2rem;
+    border-left : 0.3rem solid;
+    border-color: rgb(160, 160, 160);
+}
+
+.footer {
+    color : white;
+    margin: 3rem;
+}

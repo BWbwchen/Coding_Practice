@@ -1,0 +1,81 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: rgb(87, 226, 250);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.clock {
+    width : 20rem;
+    height : 20rem;
+    background: white url(../image/clock.png);
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 1rem solid #000;
+}
+
+.clock::before {
+    width : 1rem;
+    height : 1rem;
+    background: gray;
+    content: '';
+    border-radius: 50%;
+    z-index: 100000;
+    border: 0.4rem solid white;
+}
+
+.hour, .min, .sec {
+    position :absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hour, .hr {
+    width: 1rem;
+    height: 8rem;
+}
+.min, .mi {
+    width: 0.8rem;
+    height: 14rem;
+}
+.sec, .sc {
+    width: 0.5rem;
+    height: 17rem;
+}
+
+.hr::before {
+    position: absolute;
+    width: 1rem;
+    height: 4rem;
+    background: black;
+    content:'';
+    border-radius: 0.5rem 0.5rem 0% 0%;
+    z-index: 10;
+}
+.mi::before{
+    position: absolute;
+    width: 0.8rem;
+    height: 7rem;
+    background: gray;
+    content:'';
+    border-radius: 0.5rem 0.5rem 0% 0%;
+    z-index: 100;
+}
+.sc::before{
+    position: absolute;
+    width: 0.5rem;
+    height: 11rem;
+    background: red;
+    content:'';
+    border-radius: 0.5rem 0.5rem 0% 0%;
+    z-index: 1000;
+}

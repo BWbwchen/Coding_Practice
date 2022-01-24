@@ -36,3 +36,23 @@ public:
         return end+1;
     }
 };
+
+class Solution {
+public:
+    vector<int> pre;
+    int id;
+    TreeNode* bstFromPreorder(vector<int>& preorder) {
+        if (preorder.size() == 0) return nullptr;
+        pre = preorder;
+        id = 0;
+        return buildTree(100000);
+    }
+    
+    TreeNode* buildTree(int bound) {
+        if (id >= pre.size() || pre[id] > bound) return nullptr;
+        TreeNode* root = new TreeNode(pre[id++]);
+        root->left = buildTree(root->val);
+        root->right = buildTree(bound);
+        return root;
+    }
+};

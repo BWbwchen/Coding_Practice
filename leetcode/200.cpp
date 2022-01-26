@@ -26,4 +26,35 @@ public:
         findIslands(grid, row, col-1);
         findIslands(grid, row, col+1);
     }
+
+    void bfs(vector<vector<char>>& grid, int ii, int jj) {
+        queue<pair<int, int>> q;
+        grid[ii][jj] = '#';
+        q.push({ii, jj});
+        
+        while(!q.empty()) {
+            auto top = q.front(); q.pop();
+            
+            int i = top.first;
+            int j = top.second;
+            
+            
+            if (i-1 >= 0 && grid[i-1][j] == '1') {
+                grid[i-1][j] = '#';
+                q.push({i-1, j});
+            }
+            if (i+1 < grid.size() && grid[i+1][j] == '1') {
+                grid[i+1][j] = '#';
+                q.push({i+1, j});
+            }
+            if (j-1 >= 0 && grid[i][j-1] == '1') {
+                grid[i][j-1] = '#';
+                q.push({i, j-1});
+            }
+            if (j+1 < grid[0].size() && grid[i][j+1] == '1') {
+                grid[i][j+1] = '#';
+                q.push({i, j+1});
+            }
+        }
+    }
 };

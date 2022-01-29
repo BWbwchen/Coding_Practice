@@ -126,6 +126,23 @@ class Sort {
                 quicksort(pivot+1, end);
             }
         }
+
+        int quickselect(int front, int end, int k) {
+            if (front < end) {
+                int pivot = make_position(front, end);
+                // k -- pivot
+                // or 
+                // ---- pivot -- k
+                if (k == pivot) {
+                    return _sort[pivot]; 
+                } else if (k < pivot) {
+                    return quickselect(front, pivot-1, k);
+                } else {
+                    return quickselect(pivot+1, end, k);
+                }
+            }
+        }
+
         void merge (int front, int mid, int end) {
             // need to consider only one 
             vector<int > left(_sort.begin()+front, _sort.begin()+mid+1),
@@ -212,6 +229,12 @@ class Sort {
             // print solution 
             show();
         }
+        int quick_select_kth(int k) {
+            // select the kth smallest element
+            _sort = _unsort;
+            return quickselect(0, _sort.size() - 1, k);
+        }
+
         void merge_sort () {
             _sort = _unsort;
             mergesort(0, _sort.size()-1);
@@ -289,6 +312,8 @@ int main ()
     t.counting_sort();
     cout << "radix  sort\n";
     t.radix_sort();
+    cout << "quick select\n";
+    cout << t.quick_select_kth(11) << endl;
     
 
     return 0;

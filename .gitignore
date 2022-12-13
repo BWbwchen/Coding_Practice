@@ -16,3 +16,4 @@
 *.sh
 Makefile
 a
+.clang-format

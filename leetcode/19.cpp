@@ -11,10 +11,11 @@
 // faster than 83.97% solution
 class Solution {
 public:
-    ListNode* removeNthFromEnd(ListNode* head, int n) {
-        if (head == nullptr) return head;
+    ListNode *removeNthFromEnd(ListNode *head, int n) {
+        if (head == nullptr)
+            return head;
         // travel all, in order to get the length
-        ListNode* temp = head;
+        ListNode *temp = head;
         int length = 1;
         while (temp != nullptr) {
             temp = temp->next;
@@ -22,7 +23,7 @@ public:
         }
         // travel again to the target
         temp = head;
-        ListNode* pre = nullptr;
+        ListNode *pre = nullptr;
         length -= n;
         while (--length) {
             pre = temp;
@@ -32,10 +33,40 @@ public:
         if (temp == head) {
             head = temp->next;
         } else if (temp->next == nullptr) {
-            pre->next = nullptr;   
+            pre->next = nullptr;
         } else {
             pre->next = temp->next;
         }
+        return head;
+    }
+};
+
+// indirect pointer
+class Solution {
+public:
+    ListNode *removeNthFromEnd(ListNode *head, int n) {
+        ListNode **target = nullptr;  // pointer to the next of the deleted
+                                      // node's previous node.
+        ListNode *probe = nullptr;
+
+        probe = head;
+        target = &head;
+
+        int dis = n - 1;
+        while (dis--)
+            probe = probe->next;
+
+        while (probe->next) {
+            probe = probe->next;
+            target = &((*target)->next);
+        }
+
+        ListNode *del = *target;
+        *target = (*target)->next;
+
+        // delete target here.
+        delete del;
+
         return head;
     }
 };

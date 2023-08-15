@@ -1,18 +1,20 @@
 /**
  * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
+*/
+ struct TreeNode {
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode() : val(0), left(nullptr), right(nullptr) {}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+#include <vector>
 class Solution {
 public:
-    vector<int> pre;
-    TreeNode* bstFromPreorder(vector<int>& preorder) {
+    std::vector<int> pre;
+    TreeNode* bstFromPreorder(std::vector<int>& preorder) {
         if (preorder.size() == 0) return nullptr;
         pre = preorder;
         return buildTree(0, preorder.size()-1);
@@ -37,11 +39,11 @@ public:
     }
 };
 
-class Solution {
+class Solution2 {
 public:
-    vector<int> pre;
+    std::vector<int> pre;
     int id;
-    TreeNode* bstFromPreorder(vector<int>& preorder) {
+    TreeNode* bstFromPreorder(std::vector<int>& preorder) {
         if (preorder.size() == 0) return nullptr;
         pre = preorder;
         id = 0;
@@ -56,3 +58,9 @@ public:
         return root;
     }
 };
+
+int main(){
+  Solution solution;
+  Solution2 solution2;
+  return 0;
+}

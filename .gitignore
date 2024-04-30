@@ -15,5 +15,4 @@
 .vscode
 *.sh
 a
-.clang-format
 codeforce/cf.cpp
